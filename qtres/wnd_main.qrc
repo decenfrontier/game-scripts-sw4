@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>control8.png</file>
+        <file>gnrl7.png</file>
+        <file>plan7.png</file>
+        <file>rbt1.png</file>
+    </qresource>
+</RCC>

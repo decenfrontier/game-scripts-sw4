@@ -1,8 +1,9 @@
 from biz.constants.constants import ZK_ALL
 import lib
+from utils.plugin import PLUGIN_SDK
 
 
-class Worker(lib.PluginSDK):
+class Worker(PLUGIN_SDK):
     def __init__(self, hwnd: int, obj, row: int):
         # 初始化Com类
         super().__init__(obj)
@@ -34,21 +35,6 @@ class Worker(lib.PluginSDK):
         self.cur_task = ""  # 当前执行任务
         self.sub_task = ""  # 当前执行的子任务
         self.done_count = 0  # 当前任务完成次数
-        self.done_sec = 0  # 记录加任务完成次数的时间点
-        self.path = []  # 走过的地图名
-        self.min_path = []  # 起点到终点的最短路径
-        self.min_dist = 999  # 起点到终点的最短距离
-        self.is_find_way = False  # 寻路标志位
-        self.drug_num = {"豆腐": 0, "五加皮": 0, "升丹": 0, "高宠粮": 0}  # 药品数量
-        self.price_list = []  # 价格列表
-        self.school = ""  # 角色门派
-        # 帮派NPC位置
-        self.faction_npc_pos = {"白虎": (-1, -1), "青龙": (-1, -1), "玄武": (-1, -1)}
-        self.flag = 0  # 钓鱼是否输出等待标志位
-
-        # ---------------- 验证相关 ---------------
-        self.last_idx = -1  # 上一次的索引
-        self.last_word = ""  # 上一次的关键词
 
     def write_tbe_console(self, col: int, info: str):
         lib.wnd_main.sig_info.emit(self.row, col, info)

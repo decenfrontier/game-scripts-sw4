@@ -3,21 +3,23 @@ import subprocess
 from win32com.client import Dispatch
 from comtypes.client import CreateObject
 from const.const import DIR_DLL, DLL_NAME_DM, DLL_NAME_LW, DLL_NAME_REGDM
-from utils.plugin import DM, LW
+from utils.plugin import Dm, Lw
 
 
 def reg_com_to_system(com_name: str) -> bool:
-    obj_dll_dict = {LW.COM_NAME: DLL_NAME_LW,
-                    DM.COM_NAME: DLL_NAME_DM}
+    obj_dll_dict = {Dm.COM_NAME: DLL_NAME_DM,
+                    Lw.COM_NAME: DLL_NAME_LW}
     dll_name = obj_dll_dict[com_name]
+    print(dll_name)
     path_dll = f"{DIR_DLL}\\{dll_name}"
-    if com_name == DM.COM:
+    if com_name == Dm.COM_NAME:
         DmReg = ctypes.WinDLL(f"dll\\{DLL_NAME_REGDM}")  # 免注册插件要用32位py
         ret = DmReg.SetDllPathW(path_dll, 1)  # SetDllPathW
     else:  # 此种注册方式需要以管理员运行
         ret = run_command_with_admin(
             f"C:\\Windows\\System32\\regsvr32 {path_dll} /s")
-        ret = True if ret == 0 else False
+    print("com注册结果:", ret)
+    ret = True if ret == 0 else False
     return ret
 
 
@@ -25,7 +27,7 @@ def reg_com_to_system(com_name: str) -> bool:
 def create_com_obj(com_name: str):
     obj = None
     try:
-        if com_name == LW.COM_NAME:
+        if com_name == Lw.COM_NAME:
             obj = CreateObject(com_name)  # lw
         else:
             obj = Dispatch(com_name)  # dm, tr, op

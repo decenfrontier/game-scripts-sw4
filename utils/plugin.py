@@ -1,14 +1,15 @@
 from PySide2.QtCore import QMutex, QMutexLocker
-from const.const import DIR_RES, SLEEP_AFTER_CLICK, SLEEP_TIME
-from utils.utils import msleep, rnd
 from win32process import GetProcessTimes, WriteProcessMemory
 from win32api import OpenProcess, GetModuleHandle
 
+from const.const import DIR_RES, SLEEP_AFTER_CLICK, SLEEP_TIME
+from utils.utils import msleep, rnd
 from utils.wnd import activate_wnd
 
 
 class Lw():
     COM_NAME = 'lw.lwsoft3'
+
     def __init__(self, obj):
         # Com组件对象
         self.obj = obj
@@ -31,8 +32,8 @@ class Lw():
 
     def bind_window(self, hwnd: str) -> bool:
         locker = QMutexLocker(self.mutex)
-        ret = self.obj.BindWindow(
-            hwnd, mode_display, mode_mouse, mode_keypad, mode_public, mode_back)
+        ret = self.obj.BindWindow(hwnd, mode_display, mode_mouse, mode_keypad,
+                                  mode_public, mode_back)
         if ret:  # 绑定窗口成功后激活窗口才能运行
             activate_wnd(hwnd)
         return ret
@@ -62,8 +63,8 @@ class Lw():
     def switch_bind_game_window(self, hwnd: int):
         locker = QMutexLocker(self.mutex)
         self.obj.UnBindWindow()
-        self.obj.BindWindow(hwnd, mode_display, mode_mouse,
-                            mode_keypad, mode_public, mode_back)
+        self.obj.BindWindow(hwnd, mode_display, mode_mouse, mode_keypad,
+                            mode_public, mode_back)
         activate_wnd(hwnd)  # 过完验证要激活窗口
 
     def lock_input(self, state: str):
@@ -90,7 +91,8 @@ class Lw():
     # 枚举窗口, 枚举到返回一个整数列表, 没枚举出返回空列表
     def enum_window(self) -> [int]:
         locker = QMutexLocker(self.mutex)
-        hwnds = self.obj.EnumWindow(WND_TITLE, WND_CLASS, PROC_NAME)
+        hwnds = self.obj.EnumWindow(
+            settings.WND_TITLE, settings.WND_CLASS, settings.PROC_NAME)
         if hwnds is None or hwnds == "":
             return []
         hwnd_list = hwnds.split(",")
@@ -100,7 +102,7 @@ class Lw():
         time_hwnd_dict = {}
         for hwnd in ret_list:
             pid = self.obj.GetWindowProcessId(hwnd)
-            hProcess = OpenProcess(PROCESS_ALL_ACCESS, False, pid)
+            hProcess = OpenProcess(settings.PROCESS_ALL_ACCESS, False, pid)
             time_dict = GetProcessTimes(hProcess)
             # pywintypes.datetime(2020, 12, 26, 0, 59, 33, 948000, tzinfo=TimeZoneInfo('GMT Standard Time', True))
             create_time = time_dict["CreationTime"]
@@ -628,7 +630,8 @@ class Lw():
 
 class Dm():
     COM_NAME = 'dm.dmsoft'
-    def __init__(self, obj: BaseObj):
+
+    def __init__(self, obj):
         # com组件对象
         self.obj = obj
         # 线程锁
@@ -663,8 +666,8 @@ class Dm():
     # 绑定成功, 返回1, 未绑定成功, 返回错误码
     def bind_window(self, hwnd: int) -> int:
         locker = QMutexLocker(self.mutex)
-        ret = self.obj.BindWindowEx(
-            hwnd, mode_display, mode_mouse, mode_keypad, mode_public, mode_back)
+        ret = self.obj.BindWindowEx(hwnd, mode_display, mode_mouse, mode_keypad,
+                                    mode_public, mode_back)
         if ret == 1:  # 绑定窗口成功后激活窗口才能运行
             activate_wnd(hwnd)
         else:
@@ -695,8 +698,8 @@ class Dm():
     def switch_bind_game_window(self, hwnd: int):
         locker = QMutexLocker(self.mutex)
         self.obj.UnBindWindow()
-        self.obj.BindWindowEx(hwnd, mode_display, mode_mouse,
-                              mode_keypad, mode_public, mode_back)
+        self.obj.BindWindowEx(hwnd, mode_display, mode_mouse, mode_keypad,
+                              mode_public, mode_back)
         activate_wnd(hwnd)  # 过完验证要激活窗口
 
     def lock_input(self, state: str):
@@ -724,8 +727,8 @@ class Dm():
     # 枚举窗口, 枚举到返回一个整数列表, 没枚举出返回空列表
     def enum_window(self) -> [int, ...]:
         locker = QMutexLocker(self.mutex)
-        hwnds = self.obj.EnumWindowByProcess(
-            PROC_NAME, WND_TITLE, WND_CLASS, 1 + 2 + 8 + 32)
+        hwnds = self.obj.EnumWindowByProcess(settings.PROC_NAME, settings.WND_TITLE,
+                                             settings.WND_CLASS, 1 + 2 + 8 + 32)
         if hwnds is None or hwnds == "":
             return []
         hwnd_list = hwnds.split(",")
@@ -1245,9 +1248,11 @@ class Dm():
 
 def pass_dm_vip(com_obj):
     ver = com_obj.ver()
-    print(ver)
-    dwDllBase = GetModuleHandle("dll\\dm.dll")
-    ret = True
+    print("插件版本:", ver)
+    import os
+    dll_path = os.path.join(os.getcwd(), "dll", "dm.dll")
+    print(dll_path)
+    dwDllBase = GetModuleHandle(dll_path)
     if ver == "3.1233":
         WriteProcessMemory(-1, dwDllBase + 883572, b"\x01")
         WriteProcessMemory(-1, dwDllBase + 883692, b"\x01")
@@ -1274,3 +1279,21 @@ def pass_dm_vip(com_obj):
         WriteProcessMemory(-1, dwDllBase + 1086868, b"\x01")
         WriteProcessMemory(-1, dwDllBase + 1087396, b"\x01")
         WriteProcessMemory(-1, dwDllBase + 1087444, b"\x01")
+
+
+PLUGIN_SDK = Dm  # 用哪个插件
+COM_NAME = Dm.COM_NAME if PLUGIN_SDK == Dm else Lw.COM_NAME  # 插件的名字
+# 绑定模式
+# 乐玩模式映射到大漠模式的map
+mode_diplay_dict = {"normal": 0, "gdi": 1, "gdi2": 2,
+                    "dx2": 3, "dx": 4, "opengl": 5}
+mode_mouse_dict = {"normal": 0, "windows": 1, "windows3": 2, "dx": 3, "dx2": 4}
+mode_keypad_dict = {"normal": 0, "windows": 1,
+                    "windows3": 2, "dx": 3, "dx2": 4}
+mode_back_dict = {0: 0, 1: 1, 2: 101, 3: 103, 4: 5}
+mode_display = mode_diplay_dict["dx2"] if PLUGIN_SDK == Lw else "dx2"
+mode_mouse = mode_mouse_dict["windows3"] if PLUGIN_SDK == Lw else "dx2"
+mode_keypad = mode_keypad_dict["windows"] if PLUGIN_SDK == Lw else "dx"
+mode_public = 1+2+4+8+256+512 if PLUGIN_SDK == Lw else \
+    "dx.public.active.api|dx.public.active.message|dx.public.active.api2|dx.public.graphic.protect|dx.public.anti.api"
+mode_back = 0 if PLUGIN_SDK == Lw else mode_back_dict[3]

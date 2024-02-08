@@ -1,7 +1,9 @@
 from win32gui import GetWindowRect, SetWindowPos, SetForegroundWindow
 from win32con import PROCESS_ALL_ACCESS, HWND_TOP, SWP_NOSIZE
 from win32process import GetWindowThreadProcessId, TerminateProcess
-from win32api import OpenProcess, GetModuleHandle
+from win32api import OpenProcess
+from PySide2.QtWidgets import QApplication
+
 
 def get_wnd_pos(hwnd):
     rect = GetWindowRect(hwnd)
@@ -32,7 +34,7 @@ def terminate_wnd(hwnd):
 
 
 def is_wnd_in_list(hwnd: int) -> bool:
-    for wk in worker_list:
+    for wk in settings.worker_list:
         if wk is None:
             continue
         if wk.hwnd == hwnd:
@@ -58,7 +60,7 @@ def arrange_all_wnd(idx):
         return
     # 获取 游戏窗口数
     wnd_num = 0
-    for wk in worker_list:
+    for wk in settings.worker_list:
         if wk is None:
             continue
         wnd_num += 1
@@ -75,7 +77,7 @@ def arrange_all_wnd(idx):
             delta_y = (screen_h - 670) // gap_num if gap_num > 0 else 0
             start, end = group * 5, group * 5 + gap_num + 1
             for row in range(start, end):
-                wk = worker_list[row]
+                wk = settings.worker_list[row]
                 pos_y = (row % 5) * delta_y
                 set_wnd_pos(wk.hwnd, pos_x, pos_y)
                 wk.x, wk.y = pos_x, pos_y
@@ -90,7 +92,7 @@ def arrange_all_wnd(idx):
             delta_x = (screen_w - 870) // gap_num if gap_num > 0 else 0
             start, end = group * 5, group * 5 + gap_num + 1
             for row in range(start, end):
-                wk = worker_list[row]
+                wk = settings.worker_list[row]
                 pos_x = 70 + (row % 5) * delta_x
                 set_wnd_pos(wk.hwnd, pos_x, pos_y)
                 wk.x, wk.y = pos_x, pos_y
@@ -98,7 +100,7 @@ def arrange_all_wnd(idx):
     elif idx == 3:  # 斜排列
         delta_x = int((screen_w - 870) / (wnd_num - 1))
         delta_y = int((screen_h - 670) / (wnd_num - 1))
-        for wk in worker_list:
+        for wk in settings.worker_list:
             if wk is None:
                 continue
             pos_x = wk.row * delta_x + 70

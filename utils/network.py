@@ -1,5 +1,4 @@
 import base64
-import crypt
 import pythoncom
 import wmi
 import platform
@@ -39,8 +38,9 @@ def connect_server_tcp(server_ip, server_port):
 
 # 发送数据给服务端
 def send_to_server(tcp_socket: socket.socket, client_info_dict: dict):
-    aes_key = ''
-    aes = crypt.AesEncryption(aes_key)
+    # aes_key = ''
+    # aes = crypt.AesEncryption(aes_key)
+    aes = None
     # 内容 转 json字符串
     client_info_dict["内容"] = dict_to_json_str(client_info_dict["内容"])
     # 根据消息类型决定是否对内容aes加密
@@ -60,8 +60,9 @@ def send_to_server(tcp_socket: socket.socket, client_info_dict: dict):
 
 # 从服务端接收数据
 def recv_from_server(tcp_socket: socket.socket):
-    aes_key = ''
-    aes = crypt.AesEncryption(aes_key)
+    # aes_key = ''
+    # aes = crypt.AesEncryption(aes_key)
+    aes = None
     tcp_socket.settimeout(5)  # 设置为非阻塞接收, 只等5秒
     recv_bytes = ""
     try:  # 若等待服务端发出消息时, 客户端套接字关闭会异常

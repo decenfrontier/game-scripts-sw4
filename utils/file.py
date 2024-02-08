@@ -1,6 +1,5 @@
 import json
 import os
-from . import log 
 
 def path_exist(path: str):
     # 路径是否存在
@@ -41,7 +40,7 @@ def file_rename(dir: str, old_file: str, new_file: str):
     try:
         os.rename(f"{dir}\\{old_file}", f"{dir}\\{new_file}")
     except:
-        log.warn("file_rename error")
+        print("file_rename error")
         raise OSError
 
 
@@ -75,10 +74,11 @@ def json_file_to_dict(path_cfg: str, default_cfg={}):
             with open(path_cfg, "w", encoding="utf-8") as f:
                 json.dump(default_cfg, f, ensure_ascii=False,
                           sort_keys=True, indent=4)
+            return default_cfg
         with open(path_cfg, "r", encoding="utf-8") as f:
-            cfg_load = json.load(f)
+            cfg_load = json.load(f) or {}
     except:
-        log.warn(f"json decode error! {path_cfg} {default_cfg}")
+        print(f"json decode error! {path_cfg} {default_cfg}")
         cfg_load = {}
     return cfg_load
 
@@ -88,7 +88,7 @@ def json_str_to_dict(json_str: str):
     try:
         cfg_load = json.loads(json_str)
     except:
-        log.warn(f"json decode error! {json_str}")
+        print(f"json decode error! {json_str}")
         cfg_load = {}
     return cfg_load
 
@@ -99,7 +99,7 @@ def dict_to_json_file(py_dict: dict, path_cfg: str):
         with open(path_cfg, "w", encoding="utf-8") as f:
             json.dump(py_dict, f, ensure_ascii=False, sort_keys=True, indent=4)
     except:
-        log.warn(f"json encode error! {py_dict} {path_cfg}")
+        print(f"json encode error! {py_dict} {path_cfg}")
 
 
 # py对象 -> json字符串
@@ -107,6 +107,6 @@ def dict_to_json_str(py_dict: dict):
     try:
         json_str = json.dumps(py_dict, ensure_ascii=False, sort_keys=True)
     except:
-        log.warn(f"json encode error! {py_dict}")
+        print(f"json encode error! {py_dict}")
         json_str = "{}"
     return json_str

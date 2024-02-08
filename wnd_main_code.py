@@ -6,14 +6,20 @@ import copy
 # 第三方库
 from PySide2.QtWidgets import QMainWindow, QLabel, QComboBox, QMenu, QTableWidgetItem, \
     QDialog, QTextBrowser, QHBoxLayout, QMessageBox, QSystemTrayIcon, QAction
-from PySide2.QtGui import QIntValidator, QCursor, QIcon, QTextCursor, QCloseEvent, QColor
+from PySide2.QtGui import QCursor, QIcon, QTextCursor, QCloseEvent, QColor
 from PySide2.QtCore import Signal, QTimer, Qt, QEvent
 
 # 本地库
 from ui.wnd_main import Ui_WndMain
 import common
 from call import ThreadExec
-from utils.wnd import arrange_all_wnd
+import utils
+from utils.wnd import arrange_all_wnd, get_main_screen_wh
+from utils.plugin import pass_dm_vip
+from utils.file import json_file_to_dict
+from const import const
+from utils.log import log
+import settings
 
 
 class WndMain(QMainWindow, Ui_WndMain):
@@ -22,8 +28,7 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     def __init__(self):
         super().__init__()
-        # 开启线程
-        Thread(target=globals.pass_dm_vip, daemon=True).start()
+        
         # 安装界面
         self.setupUi(self)
         # 初始化自定义信号槽
@@ -43,7 +48,7 @@ class WndMain(QMainWindow, Ui_WndMain):
         # 显示欢迎信息
         self.show_info("初始化完成, 欢迎使用!")
         # 开启心跳线程
-        Thread(target=self.thd_heart_beat, daemon=True).start()
+        # Thread(target=self.thd_heart_beat, daemon=True).start()
 
     def closeEvent(self, event: QCloseEvent):
         self.diag.close()
@@ -57,28 +62,27 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     # 读取配置
     def cfg_read(self):
-        cfg_load = globals.json_file_to_dict(globals.PATH_JSON_MAIN, globals.cfg_main)
-        globals.cfg_main.update(cfg_load)
-
+        settings.cfg_common = json_file_to_dict(const.PATH_SOFTWARE_CONFIG, settings.cfg_common)
         # 界面设置
-        self.cmb_mode.setCurrentText(globals.cfg_main["绑定模式"])
-        self.chk_ban_sys_sleep.setChecked(globals.cfg_main["禁用系统睡眠"])
-        self.chk_ban_screen_protect.setChecked(globals.cfg_main["禁用屏幕保护"])
-        self.cmb_arrange_get_wnd.setCurrentText(globals.cfg_main["获取窗口后排列方式"])
-        self.cmb_set_plan_get_wnd.setCurrentText(globals.cfg_main["获取窗口后设置方案"])
-        self.cmb_set_plan_db_col.setCurrentText(globals.cfg_main["双击方案列设置方案"])
+        self.cmb_mode.setCurrentText(settings.cfg_common["绑定模式"])
+        self.chk_ban_sys_sleep.setChecked(settings.cfg_common["禁用系统睡眠"])
+        self.chk_ban_screen_protect.setChecked(settings.cfg_common["禁用屏幕保护"])
+        self.cmb_arrange_get_wnd.setCurrentText(settings.cfg_common["获取窗口后排列方式"])
+        self.cmb_set_plan_get_wnd.setCurrentText(
+            settings.cfg_common["获取窗口后设置方案"])
+        self.cmb_set_plan_db_col.setCurrentText(settings.cfg_common["双击方案列设置方案"])
 
     # 保存配置
     def cfg_save(self):
         # 界面设置
-        globals.cfg_main["绑定模式"] = self.cmb_mode.currentText()
+        settings.cfg_common["绑定模式"] = self.cmb_mode.currentText()
         # 基本设置
-        globals.cfg_main["禁用系统睡眠"] = self.chk_ban_sys_sleep.isChecked()
-        globals.cfg_main["禁用屏幕保护"] = self.chk_ban_screen_protect.isChecked()
-        globals.cfg_main["获取窗口后排列方式"] = self.cmb_arrange_get_wnd.currentText()
-        globals.cfg_main["获取窗口后设置方案"] = self.cmb_set_plan_get_wnd.currentText()
-        globals.cfg_main["双击方案列设置方案"] = self.cmb_set_plan_db_col.currentText()
-        globals.dict_to_json_file(globals.cfg_main, globals.PATH_JSON_MAIN)
+        settings.cfg_common["禁用系统睡眠"] = self.chk_ban_sys_sleep.isChecked()
+        settings.cfg_common["禁用屏幕保护"] = self.chk_ban_screen_protect.isChecked()
+        settings.cfg_common["获取窗口后排列方式"] = self.cmb_arrange_get_wnd.currentText()
+        settings.cfg_common["获取窗口后设置方案"] = self.cmb_set_plan_get_wnd.currentText()
+        settings.cfg_common["双击方案列设置方案"] = self.cmb_set_plan_db_col.currentText()
+        settings.dict_to_json_file(settings.cfg_common, settings.PATH_JSON_MAIN)
 
     def init_custom_sig_slot(self):
         self.sig_info.connect(
@@ -102,16 +106,13 @@ class WndMain(QMainWindow, Ui_WndMain):
         self.diag = QDialog(self)
         self.tbr_log = QTextBrowser(self.diag)
         self.form_lot = QHBoxLayout(self.diag)
-        # 网络验证
-        self.fail_count = 0  # 网络通信失败次数
-        self.last_heart_stamp = globals.cur_time_stamp  # 上次心跳时间点
 
     def init_widgets(self):
         # ------------------------- 窗口 -------------------------
-        w, h = globals.get_main_screen_wh()
+        w, h = get_main_screen_wh()
         pos_x, pos_y = w - self.width() - 10, h - self.height() - 80
         self.move(pos_x, pos_y)
-        self.setWindowTitle(f"版本号: {globals.client_ver}  到期时间: {globals.due_time}")
+        self.setWindowTitle(f"版本号: {const.client_ver}")
         # ------------------------- 日志窗口 -------------------------
         self.diag.resize(460, 480)
         self.form_lot.addWidget(self.tbr_log)
@@ -128,14 +129,6 @@ class WndMain(QMainWindow, Ui_WndMain):
         self.tray_icon = QSystemTrayIcon(self)
         self.tray_icon.setIcon(QIcon(":/rbt1.png"))
         self.tray_icon.show()
-        # ------------------------- 编辑框 -------------------------
-        validator = QIntValidator(0, 999)
-        self.edt_daye_time.setValidator(validator)
-        self.edt_zhuogui_num.setValidator(validator)
-        self.edt_hp_num.setValidator(validator)
-        self.edt_mp_num.setValidator(validator)
-        self.edt_sp_num.setValidator(validator)
-        self.edt_gcl_num.setValidator(validator)
         # ------------------------- 表 格 -------------------------
         tbe_console = self.tbe_console
         h_header = tbe_console.horizontalHeader()
@@ -144,48 +137,47 @@ class WndMain(QMainWindow, Ui_WndMain):
         h_header.setVisible(True)
         v_header.setVisible(True)
         # 设置表格各列宽度
-        h_header.resizeSection(globals.COL_HWND, 80)
-        h_header.resizeSection(globals.COL_PLAN, 95)
-        h_header.resizeSection(globals.COL_SCHOOL, 80)
-        h_header.resizeSection(globals.COL_RUN, 32)
-        h_header.resizeSection(globals.COL_PAUSE, 32)
-        h_header.resizeSection(globals.COL_END, 32)
-        h_header.resizeSection(globals.COL_LOG, 300)
+        h_header.resizeSection(const.COL_HWND, 80)
+        h_header.resizeSection(const.COL_PLAN, 95)
+        h_header.resizeSection(const.COL_RUN, 32)
+        h_header.resizeSection(const.COL_PAUSE, 32)
+        h_header.resizeSection(const.COL_END, 32)
+        h_header.resizeSection(const.COL_LOG, 300)
         # 逐行添加项
-        for row in range(globals.TBE_CONSOLE_ROW):
+        for row in range(const.TBE_CONSOLE_ROW):
             # 窗口句柄
             item = QTableWidgetItem()
-            tbe_console.setItem(row, globals.COL_HWND, item)
-            tbe_console.item(row, globals.COL_HWND).setTextAlignment(
+            tbe_console.setItem(row, const.COL_HWND, item)
+            tbe_console.item(row, const.COL_HWND).setTextAlignment(
                 Qt.AlignHCenter | Qt.AlignVCenter)
             # 方案选择
             item = QTableWidgetItem()
-            tbe_console.setItem(row, globals.COL_PLAN, item)
-            tbe_console.item(row, globals.COL_PLAN).setTextAlignment(
+            tbe_console.setItem(row, const.COL_PLAN, item)
+            tbe_console.item(row, const.COL_PLAN).setTextAlignment(
                 Qt.AlignHCenter | Qt.AlignVCenter)
             cmb_plan = QComboBox()
-            globals.cmb_plan_list[row] = cmb_plan
-            tbe_console.setCellWidget(row, globals.COL_PLAN, cmb_plan)
+            settings.cmb_plan_list[row] = cmb_plan
+            tbe_console.setCellWidget(row, const.COL_PLAN, cmb_plan)
             cmb_plan.setEnabled(False)
             # 运行
             item = QTableWidgetItem()
-            tbe_console.setItem(row, globals.COL_RUN, item)
-            tbe_console.item(row, globals.COL_RUN).setTextAlignment(
+            tbe_console.setItem(row, const.COL_RUN, item)
+            tbe_console.item(row, const.COL_RUN).setTextAlignment(
                 Qt.AlignHCenter | Qt.AlignVCenter)
             # 暂停
             item = QTableWidgetItem()
-            tbe_console.setItem(row, globals.COL_PAUSE, item)
-            tbe_console.item(row, globals.COL_PAUSE).setTextAlignment(
+            tbe_console.setItem(row, const.COL_PAUSE, item)
+            tbe_console.item(row, const.COL_PAUSE).setTextAlignment(
                 Qt.AlignHCenter | Qt.AlignVCenter)
             # 终止
             item = QTableWidgetItem()
-            tbe_console.setItem(row, globals.COL_END, item)
-            tbe_console.item(row, globals.COL_END).setTextAlignment(
+            tbe_console.setItem(row, const.COL_END, item)
+            tbe_console.item(row, const.COL_END).setTextAlignment(
                 Qt.AlignHCenter | Qt.AlignVCenter)
             # 日志
             item = QTableWidgetItem()
-            tbe_console.setItem(row, globals.COL_LOG, item)
-            tbe_console.item(row, globals.COL_LOG).setTextAlignment(
+            tbe_console.setItem(row, const.COL_LOG, item)
+            tbe_console.item(row, const.COL_LOG).setTextAlignment(
                 Qt.AlignHCenter | Qt.AlignVCenter)
             # 设置颜色
             if row in range(0, 5):
@@ -194,22 +186,23 @@ class WndMain(QMainWindow, Ui_WndMain):
                 color = QColor(243, 246, 255)
             else:
                 color = QColor(255, 246, 243)
-            for col in range(globals.TBE_CONSOLE_COL):
+            for col in range(const.TBE_CONSOLE_COL):
                 tbe_console.item(row, col).setBackgroundColor(color)
         # ------------------------- 列表框 -------------------------
-        cfg_plan_dict_load = globals.json_file_to_dict(
-            globals.PATH_JSON_PLAN, globals.cfg_plan_dict)
-        for plan_name, cfg_plan_load in cfg_plan_dict_load.items():
+        settings.cfg_plan_dict = json_file_to_dict(
+            const.PATH_SOFTWARE_PLAN, settings.cfg_plan_dict)
+        print("settings.cfg_plan_dict:", settings.cfg_plan_dict)
+        for plan_name, cfg_plan_load in settings.cfg_plan_dict.items():
             # 逐个方案更新, 否则会直接替换整个cfg_plan
-            if not globals.cfg_plan_dict.get(plan_name):  # 用户自定义的方案
-                globals.cfg_plan_dict[plan_name] = copy.deepcopy(
-                    globals.cfg_plan)  # 先读取默认方案
+            if not settings.cfg_plan_dict.get(plan_name):  # 用户自定义的方案
+                settings.cfg_plan_dict[plan_name] = copy.deepcopy(
+                    settings.cfg_plan)  # 先读取默认方案
                 self.lst_plan.addItem(plan_name)  # 添加到方案列表中
             # 用配置文件更新
-            globals.cfg_plan_dict[plan_name].update(cfg_plan_load)
+            settings.cfg_plan_dict[plan_name].update(cfg_plan_load)
         # ------------------------- 下拉框 -------------------------
-        plan_list = globals.cfg_plan_dict.keys()
-        for cmb_plan in globals.cmb_plan_list:
+        plan_list = settings.cfg_plan_dict.keys()
+        for cmb_plan in settings.cmb_plan_list:
             cmb_plan.addItems(plan_list)
             cmb_plan.setCurrentIndex(-1)
 
@@ -358,8 +351,8 @@ class WndMain(QMainWindow, Ui_WndMain):
             self.on_tbe_console_cellDoubleClicked)
         self.tbe_console.itemChanged.connect(self.on_tbe_console_itemChanged)
         # cmb_plan添加currentTextChanged信号槽
-        for idx in range(len(globals.cmb_plan_list)):
-            cmb_plan = globals.cmb_plan_list[idx]
+        for idx in range(len(settings.cmb_plan_list)):
+            cmb_plan = settings.cmb_plan_list[idx]
             cmb_plan.currentTextChanged.connect(
                 self.on_cmb_plan_cur_text_changed)
         # ------------------- 选项卡-设置 -------------------
@@ -393,128 +386,128 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     def show_info(self, info: str):
         self.lbe_info.setText(info)
-        globals.log.info(info)
+        log.info(info)
 
     def show_tip(self, tip: str):
         self.lbe_info.setText(tip)
 
-    def thd_heart_beat(self):
-        while True:
-            # 每一轮循环错误次数+1, 失败则每隔20秒连接一次
-            self.fail_count += 1
-            sleep_time = 20
-            # globals.is_user_dangerous()
-            # 尝试连接服务端
-            tcp_socket = globals.connect_server_tcp()
-            if not tcp_socket:  # 连接失败
-                globals.log.info("与服务器连接异常...")
-            else:  # 连接成功, 发送心跳包
-                client_info_dict = {"消息类型": "心跳",
-                                    "内容": {"账号": globals.user_account, "机器码": globals.machine_code, "用户行为": globals.action_code}}
-                globals.send_to_server(tcp_socket, client_info_dict)
-                msg_type, server_content_dict = globals.recv_from_server(
-                    tcp_socket)
-                if msg_type == "心跳":
-                    heart_ret = server_content_dict["结果"]
-                    if heart_ret == "正常":
-                        self.fail_count = 0  # 正常则清零失败错误
-                        self.last_heart_stamp = globals.cur_time_stamp
-                        sleep_time = 60*9  # 正常通信, 下次隔9分钟发一次心跳包
-                    elif heart_ret == "下线":
-                        self.fail_count = 10
-                        self.show_info(server_content_dict["详情"])
-                tcp_socket.close()  # 发送接收完立刻断开
-            # 超过5次没连上, 跳出心跳循环, 关闭窗口
-            if self.fail_count > 5:
-                break
-            print("等待时间:", sleep_time)
-            time.sleep(sleep_time)
-        self.show_info("与服务器断开连接1...")
-        self.sig_close.emit()
+    # def thd_heart_beat(self):
+    #     while True:
+    #         # 每一轮循环错误次数+1, 失败则每隔20秒连接一次
+    #         self.fail_count += 1
+    #         sleep_time = 20
+    #         # settings.is_user_dangerous()
+    #         # 尝试连接服务端
+    #         tcp_socket = settings.connect_server_tcp()
+    #         if not tcp_socket:  # 连接失败
+    #             log.info("与服务器连接异常...")
+    #         else:  # 连接成功, 发送心跳包
+    #             client_info_dict = {"消息类型": "心跳",
+    #                                 "内容": {"账号": settings.user_account, "机器码": settings.machine_code, "用户行为": settings.action_code}}
+    #             settings.send_to_server(tcp_socket, client_info_dict)
+    #             msg_type, server_content_dict = settings.recv_from_server(
+    #                 tcp_socket)
+    #             if msg_type == "心跳":
+    #                 heart_ret = server_content_dict["结果"]
+    #                 if heart_ret == "正常":
+    #                     self.fail_count = 0  # 正常则清零失败错误
+    #                     self.last_heart_stamp = settings.cur_time_stamp
+    #                     sleep_time = 60*9  # 正常通信, 下次隔9分钟发一次心跳包
+    #                 elif heart_ret == "下线":
+    #                     self.fail_count = 10
+    #                     self.show_info(server_content_dict["详情"])
+    #             tcp_socket.close()  # 发送接收完立刻断开
+    #         # 超过5次没连上, 跳出心跳循环, 关闭窗口
+    #         if self.fail_count > 5:
+    #             break
+    #         print("等待时间:", sleep_time)
+    #         time.sleep(sleep_time)
+    #     self.show_info("与服务器断开连接1...")
+    #     self.sig_close.emit()
 
     def send_recv_offline(self):
-        # globals.is_user_dangerous()
-        tcp_socket = globals.connect_server_tcp()
+        # settings.is_user_dangerous()
+        tcp_socket = settings.connect_server_tcp()
         if not tcp_socket:
-            globals.log.info("服务器繁忙, 请稍后再试")
+            log.info("服务器繁忙, 请稍后再试")
             return
         client_info_dict = {"消息类型": "离线",
-                            "内容": {"账号": globals.user_account, "用户行为": globals.action_code}}
-        globals.send_to_server(tcp_socket, client_info_dict)
-        msg_type, server_content_dict = globals.recv_from_server(tcp_socket)
+                            "内容": {"账号": settings.user_account, "用户行为": settings.action_code}}
+        settings.send_to_server(tcp_socket, client_info_dict)
+        msg_type, server_content_dict = settings.recv_from_server(tcp_socket)
         tcp_socket.close()
         if msg_type == "离线":
-            globals.log.info("------- 客户端正常退出 -------")
+            log.info("------- 客户端正常退出 -------")
         else:
-            globals.log.info("------- 客户端异常退出 -------")
+            log.info("------- 客户端异常退出 -------")
 
     def one_key_get_wnd(self):
-        hwnd_list = globals.com_obj.enum_window()
+        hwnd_list = settings.com_obj.enum_window()
 
         if hwnd_list == []:
             self.show_info("未发现游戏窗口,请打开游戏后再试")
             return
-        globals.log.info(f"获取到的窗口句柄:{hwnd_list}")
+        log.info(f"获取到的窗口句柄:{hwnd_list}")
         # 获取 用户设定的方案索引
-        plan_idx = int(globals.cfg_main["获取窗口后设置方案"])
+        plan_idx = int(settings.cfg_common["获取窗口后设置方案"])
         for hwnd in hwnd_list:
             # 若窗口已经存在, 则跳过下面步骤
-            if globals.is_wnd_in_list(hwnd):
+            if settings.is_wnd_in_list(hwnd):
                 continue
             # 找一个空位填充
-            row = globals.worker_list.index(None)
-            self.tbe_console.item(row, globals.COL_HWND).setText(str(hwnd))
+            row = settings.worker_list.index(None)
+            self.tbe_console.item(row, settings.COL_HWND).setText(str(hwnd))
             # 创建com对象
-            obj = globals.create_com_obj(globals.COM_NAME)
-            if globals.is_custom:
-                obj = globals.BaseObj(obj)
+            obj = settings.create_com_obj(settings.COM_NAME)
+            if settings.is_custom:
+                obj = settings.BaseObj(obj)
             # 创建worker对象
             wk = common.Worker(hwnd, obj, row)
             # 把wk添加到列表中
-            globals.worker_list[row] = wk
+            settings.worker_list[row] = wk
             # 清空之前的日志内容
             row_num = row + 1
-            globals.file_clear_content(f"{globals.DIR_LOG}\\{row_num}.txt")
+            settings.file_clear_content(f"{settings.DIR_LOG}\\{row_num}.txt")
             # 激活cmb_plan,  并设置方案
-            cmb_plan = globals.cmb_plan_list[row]
+            cmb_plan = settings.cmb_plan_list[row]
             cmb_plan.setEnabled(True)
             cmb_plan.setCurrentIndex(plan_idx)
             # 获取窗口位置
-            x, y = globals.get_wnd_pos(hwnd)
-            if x != globals.HIDE_X:
+            x, y = settings.get_wnd_pos(hwnd)
+            if x != settings.HIDE_X:
                 wk.x, wk.y = x, y
             wk.record(f"窗口{row_num}获取成功, 并自动设置为{plan_idx}号方案")
         # 排列所有窗口
-        mode = int(globals.cfg_main["获取窗口后排列方式"])
+        mode = int(settings.cfg_common["获取窗口后排列方式"])
         arrange_all_wnd(mode)
         self.show_info(f"获取所有游戏窗口成功, 并按方式{mode}排列")
 
     def one_key_set_plan(self, idx):
-        for wk in globals.worker_list:
+        for wk in settings.worker_list:
             if wk is None:
                 continue
-            cmb_plan = globals.cmb_plan_list[wk.row]
+            cmb_plan = settings.cmb_plan_list[wk.row]
             if cmb_plan.isEnabled() and cmb_plan.count() >= idx:
                 cmb_plan.setCurrentIndex(idx)
 
     def rmv_wnd_from_console(self, wk: common.Worker):
         row = wk.row
         # 移除此工人
-        globals.worker_list[row] = None
+        settings.worker_list[row] = None
         wk = None
         # 清空此行内容
-        for col in range(globals.TBE_CONSOLE_COL):
+        for col in range(settings.TBE_CONSOLE_COL):
             item = self.tbe_console.item(row, col)
             if item:
                 item.setText("")
         # 禁用cmb_plan
-        cmb_plan = globals.cmb_plan_list[row]
+        cmb_plan = settings.cmb_plan_list[row]
         cmb_plan.setEnabled(False)
         cmb_plan.setCurrentIndex(-1)
 
     def update_cmb_plan_tooltip(self, row):
-        wk = globals.worker_list[row]
-        cmb_plan = globals.cmb_plan_list[row]
+        wk = settings.worker_list[row]
+        cmb_plan = settings.cmb_plan_list[row]
         tooltip = "-".join(wk.cfg_plan["执行列表"])
         cmb_plan.setToolTip(tooltip)
 
@@ -532,24 +525,24 @@ class WndMain(QMainWindow, Ui_WndMain):
             self, "警告", "是否要强制结束所有游戏窗口?", QMessageBox.Yes | QMessageBox.No)
         if ret != QMessageBox.Yes:
             return
-        for wk in globals.worker_list:
+        for wk in settings.worker_list:
             if wk is None:
                 continue
-            globals.terminate_wnd(wk.hwnd)
+            settings.terminate_wnd(wk.hwnd)
             self.rmv_wnd_from_console(wk)
 
     def on_action_hide_show_all_wnd_triggered(self):
-        for wk in globals.worker_list:
+        for wk in settings.worker_list:
             if wk is None:
                 continue
-            x, y = globals.get_wnd_pos(wk.hwnd)
-            if x != globals.HIDE_X:  # 在显示则隐藏
+            x, y = settings.get_wnd_pos(wk.hwnd)
+            if x != settings.HIDE_X:  # 在显示则隐藏
                 wk.hide_wnd(x, y)
             else:  # 在隐藏则显示
                 wk.show_wnd()
 
     def on_action_lock_unlock_all_wnd_triggered(self):
-        for wk in globals.worker_list:
+        for wk in settings.worker_list:
             if wk is None:
                 continue
             if wk.is_lock:
@@ -569,43 +562,44 @@ class WndMain(QMainWindow, Ui_WndMain):
         self.sig_close.emit()
 
     def on_timer_cur_timeout(self):
-        globals.cur_time_fmt = time.strftime("%H:%M:%S")
-        globals.cur_time_stamp += 1
+        settings.cur_time_fmt = time.strftime("%H:%M:%S")
+        settings.cur_time_stamp += 1
 
     def on_timer_info_timeout(self):
         tip_list = [
             "低调使用科技, 守护游戏公平!",
         ]
-        tip = globals.rnd_choice(tip_list)
+        tip = settings.rnd_choice(tip_list)
         self.show_tip(tip)
 
     def on_timer_ds_timeout(self):
         # 若距离上次心跳过去15分钟, 则退出软件
-        if globals.delta_minute(self.last_heart_stamp, globals.cur_time_stamp) >= 15:  # 防止心跳线程被干掉
+        # 防止心跳线程被干掉
+        if settings.delta_minute(self.last_heart_stamp, settings.cur_time_stamp) >= 15:
             self.show_info("与服务器断开连接2...")
             self.sig_close.emit()
-        if not globals.cfg_main["定时"]:
+        if not settings.cfg_common["定时"]:
             return
-        if globals.cfg_main["定时运行全部窗口"] and globals.cur_time_fmt[:5] == globals.cfg_main["定时运行全部窗口时间"]:
+        if settings.cfg_common["定时运行全部窗口"] and settings.cur_time_fmt[:5] == settings.cfg_common["定时运行全部窗口时间"]:
             self.show_info("定时运行开始执行!")
             # 依次运行
-            for wk in globals.worker_list:
+            for wk in settings.worker_list:
                 if wk:
-                    wk.write_tbe_console(globals.COL_RUN, globals.SELECTED)
-        if globals.cfg_main["定时关闭计算机"] and globals.cur_time_fmt[:5] == globals.cfg_main["定时关闭计算机时间"]:
+                    wk.write_tbe_console(settings.COL_RUN, settings.SELECTED)
+        if settings.cfg_common["定时关闭计算机"] and settings.cur_time_fmt[:5] == settings.cfg_common["定时关闭计算机时间"]:
             self.show_info("定时关机开始执行!")
             # 依次终止
-            for wk in globals.worker_list:
+            for wk in settings.worker_list:
                 if wk:
-                    wk.write_tbe_console(globals.COL_END, globals.SELECTED)
+                    wk.write_tbe_console(settings.COL_END, settings.SELECTED)
             # 弹框提示
-            msg_box = globals.TimeMsgBox("提示", "定时关机时间到, 是否关机?")
+            msg_box = settings.TimeMsgBox("提示", "定时关机时间到, 是否关机?")
             msg_box.exec_()
             if msg_box.clickedButton() != msg_box.btn_accept:
                 self.show_info("已取消关机")
                 return
             # 确定关机
-            globals.com_obj.exit_os()
+            settings.com_obj.exit_os()
 
     def on_tre_all_item_double_clicked(self, item, col):
         item_text = item.text(col)
@@ -622,20 +616,22 @@ class WndMain(QMainWindow, Ui_WndMain):
         curItem = self.lst_plan.currentItem()
         plan_name = "0内置默认" if curItem is None else curItem.text()
         # 弹框提示
-        msg_box = globals.MyMsgBox("提示", f"将左边的控件配置保存至方案 \n{plan_name}?", self)
+        msg_box = settings.MyMsgBox(
+            "提示", f"将左边的控件配置保存至方案 \n{plan_name}?", self)
         msg_box.exec_()
         if msg_box.clickedButton() != msg_box.btn_accept:
             self.show_info("保存方案 操作已取消")
             return
-        cfg_plan = globals.cfg_plan_dict[plan_name]
+        cfg_plan = settings.cfg_plan_dict[plan_name]
         # 保存方案配置
         cfg_plan["执行列表"] = [self.lst_exec.item(
             i).text() for i in range(self.lst_exec.count())]
-        globals.dict_to_json_file(globals.cfg_plan_dict, globals.PATH_JSON_PLAN)
+        settings.dict_to_json_file(
+            settings.cfg_plan_dict, settings.PATH_JSON_PLAN)
         # 刷新所有cmb_plan的toolTip
-        for cmb_plan in globals.cmb_plan_list:
+        for cmb_plan in settings.cmb_plan_list:
             if cmb_plan.currentText() == plan_name:
-                idx = globals.cmb_plan_list.index(cmb_plan)
+                idx = settings.cmb_plan_list.index(cmb_plan)
                 self.update_cmb_plan_tooltip(idx)
         self.show_info(f"方案配置-{plan_name}, 保存完成")
 
@@ -646,7 +642,7 @@ class WndMain(QMainWindow, Ui_WndMain):
             self.show_info("失败,请选择要读取的配置文件!")
             return
         plan_name = curItem.text()
-        cfg_plan = globals.cfg_plan_dict[plan_name]
+        cfg_plan = settings.cfg_plan_dict[plan_name]
         # 读取方案配置
         self.lst_exec.clear()
         self.lst_exec.addItems(cfg_plan["执行列表"])
@@ -661,19 +657,20 @@ class WndMain(QMainWindow, Ui_WndMain):
         if plan_name == "":
             self.show_info("失败, 请先输入新方案名")
             return
-        if plan_name in globals.cfg_plan_dict:
+        if plan_name in settings.cfg_plan_dict:
             self.show_info("失败, 方案名已存在")
             return
         # 创建新配置文件对应的CfgPlan对象
-        globals.cfg_plan_dict[plan_name] = copy.deepcopy(globals.cfg_plan)
+        settings.cfg_plan_dict[plan_name] = copy.deepcopy(settings.cfg_plan)
         # 在lst_plan里添加方案名, 并排序
         self.lst_plan.addItem(plan_name)
         self.lst_plan.sortItems()
         # 在cmb_plan里添加方案名
-        for cmb_plan in globals.cmb_plan_list:
+        for cmb_plan in settings.cmb_plan_list:
             cmb_plan.addItem(plan_name)
         # 保存到json文件
-        globals.dict_to_json_file(globals.cfg_plan_dict, globals.PATH_JSON_PLAN)
+        settings.dict_to_json_file(
+            settings.cfg_plan_dict, settings.PATH_JSON_PLAN)
         self.show_info("新建方案成功!")
 
     # 重命名方案
@@ -688,14 +685,16 @@ class WndMain(QMainWindow, Ui_WndMain):
             self.show_info("请先输入新方案名")
             return
         # 重命名key
-        globals.cfg_plan_dict[new_plan_name] = globals.cfg_plan_dict.pop(old_plan_name)
-        globals.dict_to_json_file(globals.cfg_plan_dict, globals.PATH_JSON_PLAN)
+        settings.cfg_plan_dict[new_plan_name] = settings.cfg_plan_dict.pop(
+            old_plan_name)
+        settings.dict_to_json_file(
+            settings.cfg_plan_dict, settings.PATH_JSON_PLAN)
         # 在lst_plan里修改方案名
         self.lst_plan.takeItem(self.lst_plan.row(curItem))
         self.lst_plan.addItem(new_plan_name)
         self.lst_plan.sortItems()  # 重新排序
         # 在cmb_plan里修改方案名
-        for cmb_plan in globals.cmb_plan_list:
+        for cmb_plan in settings.cmb_plan_list:
             idx = cmb_plan.findText(old_plan_name)
             if idx != -1:
                 cmb_plan.setItemText(idx, new_plan_name)
@@ -712,53 +711,55 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     def on_chk_ban_sys_sleep_stateChanged(self, state):
         if state == 2:  # 变为选中
-            globals.com_obj.ban_sys_sleep()
+            settings.com_obj.ban_sys_sleep()
             self.show_info("已成功禁用系统睡眠, 关机后自动失效")
 
     def on_chk_ban_screen_protect_stateChanged(self, state):
         if state == 2:  # 变为选中
-            globals.com_obj.ban_screen_protect()
+            settings.com_obj.ban_screen_protect()
             self.show_info("已成功禁用屏幕保护, 关机后自动失效")
 
     def on_h_header_double_clicked(self, col):
-        globals.log.info(f"第{col}列双击了")
-        if col == globals.COL_HWND:
+        log.info(f"第{col}列双击了")
+        if col == const.COL_HWND:
             self.show_info("双击 [窗口句柄] 表头, 一键获取所有窗口")
             self.one_key_get_wnd()
 
-        elif col == globals.COL_PLAN:
-            plan_idx = int(globals.cfg_main["双击方案列设置方案"])
+        elif col == const.COL_PLAN:
+            plan_idx = int(settings.cfg_common["双击方案列设置方案"])
             self.show_info(f"双击 [方案选择] 表头, 一键设置为{plan_idx}号方案")
             self.one_key_set_plan(plan_idx)
 
-        elif col == globals.COL_RUN:
+        elif col == const.COL_RUN:
             self.show_info("双击 [运行] 表头, 一键运行表格上的所有窗口")
-            for wk in globals.worker_list:
+            for wk in settings.worker_list:
                 if wk is None:
                     continue
-                self.tbe_console.item(wk.row, col).setText(globals.SELECTED)
+                self.tbe_console.item(wk.row, col).setText(settings.SELECTED)
 
-        elif col == globals.COL_PAUSE:
+        elif col == const.COL_PAUSE:
             self.show_info("双击 [暂停] 表头, 一键暂停表格上的所有窗口")
-            for wk in globals.worker_list:
+            for wk in settings.worker_list:
                 if wk is None:
                     continue
-                if self.tbe_console.item(wk.row, globals.COL_RUN).text():
-                    self.tbe_console.item(wk.row, col).setText(globals.SELECTED)
+                if self.tbe_console.item(wk.row, settings.COL_RUN).text():
+                    self.tbe_console.item(
+                        wk.row, col).setText(settings.SELECTED)
 
-        elif col == globals.COL_END:
+        elif col == const.COL_END:
             self.show_info("双击 [终止] 表头, 一键终止表格上的所有窗口")
-            for wk in globals.worker_list:
+            for wk in settings.worker_list:
                 if wk is None:
                     continue
-                if self.tbe_console.item(wk.row, globals.COL_RUN).text() or \
-                        self.tbe_console.item(wk.row, globals.COL_PAUSE).text():
-                    self.tbe_console.item(wk.row, col).setText(globals.SELECTED)
+                if self.tbe_console.item(wk.row, settings.COL_RUN).text() or \
+                        self.tbe_console.item(wk.row, settings.COL_PAUSE).text():
+                    self.tbe_console.item(
+                        wk.row, col).setText(settings.SELECTED)
 
-        elif col == globals.COL_LOG:
+        elif col == const.COL_LOG:
             self.show_info("双击 [日志] 表头, 获取软件日志记录")
             # 读取内容, 设置内容
-            content = globals.file_read_content(globals.PATH_CLIENT_LOG)
+            content = settings.file_read_content(settings.PATH_CLIENT_LOG)
             self.tbr_log.setText(content)
             # 设置标题, 将光标移到文档末, 显示
             self.diag.setWindowTitle(f"日志-本软件")
@@ -767,53 +768,54 @@ class WndMain(QMainWindow, Ui_WndMain):
             self.diag.activateWindow()
 
     def on_v_header_double_clicked(self, row):
-        globals.log.info(f"第{row}行双击了")
-        wk = globals.worker_list[row]
+        log.info(f"第{row}行双击了")
+        wk = settings.worker_list[row]
         if not wk:
             return
         self.show_info("双击 垂直 表头, 显示/隐藏该窗口")
-        x, y = globals.get_wnd_pos(wk.hwnd)
-        if x != globals.HIDE_X:
+        x, y = settings.get_wnd_pos(wk.hwnd)
+        if x != settings.HIDE_X:
             wk.hide_wnd(x, y)
         else:
             wk.show_wnd()
-            globals.activate_wnd(wk.hwnd)
+            settings.activate_wnd(wk.hwnd)
 
     def on_tbe_console_cellDoubleClicked(self, row, col):
         # 若双击的列不是日志列, 且还没获取窗口
-        if col != globals.COL_LOG and not self.tbe_console.item(row, globals.COL_HWND).text():
+        if col != settings.COL_LOG and not self.tbe_console.item(row, settings.COL_HWND).text():
             self.show_info("无效操作, 请先双击 [窗口句柄] 表头获取游戏窗口")
             return
-        globals.log.info(f"第{row}行, 第{col}列单元格被双击!")
+        log.info(f"第{row}行, 第{col}列单元格被双击!")
         row_num = row + 1
 
-        if col == globals.COL_HWND:  # 若双击"窗口句柄"列
+        if col == settings.COL_HWND:  # 若双击"窗口句柄"列
             self.show_info(f"双击 [窗口句柄] 列,第{row_num}行, 显示并激活该窗口")
-            wk = globals.worker_list[row]
+            wk = settings.worker_list[row]
             wk.show_wnd()
-            globals.activate_wnd(wk.hwnd)
+            settings.activate_wnd(wk.hwnd)
 
-        elif col == globals.COL_RUN:  # 若双击"运行"列
+        elif col == settings.COL_RUN:  # 若双击"运行"列
             self.show_info(f"双击 [运行] 列,第{row_num}行, 运行该窗口")
-            self.tbe_console.currentItem().setText(globals.SELECTED)
+            self.tbe_console.currentItem().setText(settings.SELECTED)
 
-        elif col == globals.COL_PAUSE:  # 若双击"暂停"列
-            if self.tbe_console.item(row, globals.COL_RUN).text():
+        elif col == settings.COL_PAUSE:  # 若双击"暂停"列
+            if self.tbe_console.item(row, settings.COL_RUN).text():
                 self.show_info(f"双击 [暂停] 列,第{row_num}行, 暂停该窗口")
-                self.tbe_console.currentItem().setText(globals.SELECTED)
+                self.tbe_console.currentItem().setText(settings.SELECTED)
 
-        elif col == globals.COL_END:  # 若双击"终止"列
-            if self.tbe_console.item(row, globals.COL_RUN).text() or \
-                    self.tbe_console.item(row, globals.COL_PAUSE).text():
+        elif col == settings.COL_END:  # 若双击"终止"列
+            if self.tbe_console.item(row, settings.COL_RUN).text() or \
+                    self.tbe_console.item(row, settings.COL_PAUSE).text():
                 self.show_info(f"双击 [终止] 列,第{row_num}行, 终止该窗口")
-                self.tbe_console.currentItem().setText(globals.SELECTED)
+                self.tbe_console.currentItem().setText(settings.SELECTED)
 
-        elif col == globals.COL_LOG:  # 若双击"日志"列
+        elif col == settings.COL_LOG:  # 若双击"日志"列
             self.show_info(f"双击 [日志] 列,第{row_num}行, 显示该窗口的执行日志")
             # 先清除当前tbr日志的内容
             self.tbr_log.clear()
             # 读取内容, 设置内容
-            content = globals.file_read_content(f"{globals.DIR_LOG}\\{row_num}.txt")
+            content = settings.file_read_content(
+                f"{settings.DIR_LOG}\\{row_num}.txt")
             self.tbr_log.setText(content)
             # 设置标题, 将光标移到文档末, 显示
             self.diag.setWindowTitle(f"日志-窗口{row_num}")
@@ -823,33 +825,33 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     def on_tbe_console_itemChanged(self, item):
         col = item.column()
-        if col > globals.COL_END or col < globals.COL_RUN or item.text() == "":
+        if col > settings.COL_END or col < settings.COL_RUN or item.text() == "":
             return
         row = item.row()
-        wk = globals.worker_list[row]
-        if col == globals.COL_RUN:
-            self.tbe_console.item(row, globals.COL_PAUSE).setText("")
-            self.tbe_console.item(row, globals.COL_END).setText("")
+        wk = settings.worker_list[row]
+        if col == settings.COL_RUN:
+            self.tbe_console.item(row, settings.COL_PAUSE).setText("")
+            self.tbe_console.item(row, settings.COL_END).setText("")
             Thread(target=self.thread_run, args=(wk,), daemon=True).start()
 
-        elif col == globals.COL_PAUSE:
-            self.tbe_console.item(row, globals.COL_RUN).setText("")
-            self.tbe_console.item(row, globals.COL_END).setText("")
+        elif col == settings.COL_PAUSE:
+            self.tbe_console.item(row, settings.COL_RUN).setText("")
+            self.tbe_console.item(row, settings.COL_END).setText("")
             Thread(target=self.thread_pause, args=(wk,), daemon=True).start()
 
-        elif col == globals.COL_END:
-            self.tbe_console.item(row, globals.COL_RUN).setText("")
-            self.tbe_console.item(row, globals.COL_PAUSE).setText("")
+        elif col == settings.COL_END:
+            self.tbe_console.item(row, settings.COL_RUN).setText("")
+            self.tbe_console.item(row, settings.COL_PAUSE).setText("")
             Thread(target=self.thread_end, args=(wk,), daemon=True).start()
 
     # 方案改变
     def on_cmb_plan_cur_text_changed(self, plan_name):
         cmb_plan = self.sender()
-        row = globals.cmb_plan_list.index(cmb_plan)
-        wk = globals.worker_list[row]
+        row = settings.cmb_plan_list.index(cmb_plan)
+        wk = settings.worker_list[row]
         if wk is None:
             return
-        wk.cfg_plan = globals.cfg_plan_dict[plan_name]
+        wk.cfg_plan = settings.cfg_plan_dict[plan_name]
         wk.record(f"窗口已更换为方案{plan_name}")
         # 刷新cmb_plan的toolTip
         self.update_cmb_plan_tooltip(row)
@@ -882,13 +884,14 @@ class WndMain(QMainWindow, Ui_WndMain):
             return
         plan_name = cur_item.text()
         # 从 方案配置字典中移除该方案
-        globals.cfg_plan_dict.pop(plan_name)
-        globals.dict_to_json_file(globals.cfg_plan_dict, globals.PATH_JSON_PLAN)
+        settings.cfg_plan_dict.pop(plan_name)
+        settings.dict_to_json_file(
+            settings.cfg_plan_dict, settings.PATH_JSON_PLAN)
         # 删除 方案列表中的对应项
         row = self.lst_plan.row(cur_item)
         self.lst_plan.takeItem(row)
         # 删除 所有方案选择下拉框中的对应项
-        for cmb_plan in globals.cmb_plan_list:
+        for cmb_plan in settings.cmb_plan_list:
             cur_idx = cmb_plan.findText(plan_name)
             if cur_idx >= 0:  # 找到才删
                 cmb_plan.removeItem(cur_idx)
@@ -902,7 +905,7 @@ class WndMain(QMainWindow, Ui_WndMain):
         row_list = [item.row() for item in items if item.column()
                     == 0 and item.text() != ""]
         for row in row_list:
-            wk = globals.worker_list[row]
+            wk = settings.worker_list[row]
             if wk.is_end:
                 self.rmv_wnd_from_console(wk)
             else:
@@ -913,9 +916,9 @@ class WndMain(QMainWindow, Ui_WndMain):
         row_list = [item.row() for item in items if item.column()
                     == 0 and item.text() != ""]
         for row in row_list:
-            wk = globals.worker_list[row]
-            x, y = globals.get_wnd_pos(wk.hwnd)
-            if x != globals.HIDE_X:
+            wk = settings.worker_list[row]
+            x, y = settings.get_wnd_pos(wk.hwnd)
+            if x != settings.HIDE_X:
                 wk.hide_wnd(x, y)
             else:
                 wk.show_wnd()
@@ -927,7 +930,7 @@ class WndMain(QMainWindow, Ui_WndMain):
         if not row_list:
             return
         for row in row_list:
-            wk = globals.worker_list[row]
+            wk = settings.worker_list[row]
             if wk.is_lock:
                 wk.lock_input("关闭锁定")
                 wk.record("锁定键鼠 已关闭")
@@ -946,8 +949,8 @@ class WndMain(QMainWindow, Ui_WndMain):
         row_list = [item.row() for item in items if item.column()
                     == 0 and item.text() != ""]
         for row in row_list:
-            wk = globals.worker_list[row]
-            globals.terminate_wnd(wk.hwnd)
+            wk = settings.worker_list[row]
+            utils.terminate_wnd(wk.hwnd)
             self.rmv_wnd_from_console(wk)
 
     @staticmethod
@@ -961,7 +964,7 @@ class WndMain(QMainWindow, Ui_WndMain):
             wk.record(f"窗口绑定结果:{ret}")
             if ret == 1:  # 若绑定成功
                 # 禁用cmb_plan
-                cmb_plan = globals.cmb_plan_list[wk.row]
+                cmb_plan = settings.cmb_plan_list[wk.row]
                 cmb_plan.setEnabled(False)
                 # 运行窗口
                 wk.record("窗口开始运行")
@@ -970,7 +973,7 @@ class WndMain(QMainWindow, Ui_WndMain):
             else:  # 若绑定失败, 则把"运行"列重置为空
                 wk.record(f"窗口绑定失败, 错误码: {ret}, 请更换绑定模式")
                 wk.is_run, wk.is_pause, wk.is_end = False, False, True
-                wk.write_tbe_console(globals.COL_RUN, "")
+                wk.write_tbe_console(settings.COL_RUN, "")
 
     @staticmethod
     def thread_pause(wk: common.Worker):
@@ -985,8 +988,6 @@ class WndMain(QMainWindow, Ui_WndMain):
         if wk.thread:
             wk.thread.end()
         # 启用cmb_plan
-        cmb_plan = globals.cmb_plan_list[wk.row]
+        cmb_plan = settings.cmb_plan_list[wk.row]
         cmb_plan.setEnabled(True)
         wk.record("窗口已终止运行")
-
-

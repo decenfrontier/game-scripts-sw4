@@ -29,6 +29,5 @@ SLEEP_AFTER_CLICK = 150  # 点击后的等待时间ms
 SOFT_NAME = "wssoft"
 PATH_SOFTWARE = os.path.join(os.path.expanduser("~"), SOFT_NAME)
 PATH_SOFTWARE_LOG = os.path.join(PATH_SOFTWARE, "logs")  # 日志文件
-PATH_SOFTWARE_CONFIG = os.path.join(PATH_SOFTWARE, "config")  # 软件的通用配置
-PATH_SOFTWARE_PLAN = os.path.join(PATH_SOFTWARE, "plans")  # 不同方案的配置
-
+PATH_SOFTWARE_PLAN = os.path.join(PATH_SOFTWARE, "plans.json")  # 不同方案的配置
+PATH_SOFTWARE_COMMON = os.path.join(PATH_SOFTWARE, "common.json")  # 软件的通用配置

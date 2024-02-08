@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>808</width>
+    <width>836</width>
     <height>472</height>
    </rect>
   </property>
@@ -26,7 +26,7 @@
    <string>Robot</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../qtres/wnd_main.qrc">
+   <iconset resource="../qt_res/wnd_main.qrc">
     <normaloff>:/rbt1.png</normaloff>:/rbt1.png</iconset>
   </property>
   <property name="windowOpacity">
@@ -484,6 +484,21 @@ QTableView::item:hover	{
                <string>师门跑环</string>
               </property>
              </item>
+             <item>
+              <property name="text">
+               <string>极限挑战</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>内功闭关</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>经脉贯通</string>
+              </property>
+             </item>
             </item>
             <item>
              <property name="text">
@@ -690,7 +705,10 @@ QTableView::item:hover	{
              <string>保存 执行列表和战斗设置 到 选中方案, 未选择方案则保存到内置默认方案中</string>
             </property>
             <property name="text">
-             <string>保存到方案→</string>
+             <string> 保  存
+执行列表
+至选中方案
+→</string>
             </property>
            </widget>
           </item>
@@ -866,8 +884,177 @@ QTableView::item:hover	{
            </size>
           </property>
           <property name="title">
-           <string>方案-基本配置</string>
+           <string>方案配置</string>
           </property>
+          <widget class="QGroupBox" name="groupBox_people">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>30</y>
+             <width>96</width>
+             <height>58</height>
+            </rect>
+           </property>
+           <property name="title">
+            <string>人物战斗</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QRadioButton" name="radio_fight_people_attack">
+              <property name="text">
+               <string>攻</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radio_fight_people_defend">
+              <property name="text">
+               <string>防</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QGroupBox" name="groupBox_pet">
+           <property name="geometry">
+            <rect>
+             <x>112</x>
+             <y>31</y>
+             <width>96</width>
+             <height>58</height>
+            </rect>
+           </property>
+           <property name="title">
+            <string>宠物战斗</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+           </property>
+           <property name="flat">
+            <bool>false</bool>
+           </property>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QRadioButton" name="radio_fight_pet_attack">
+              <property name="text">
+               <string>攻</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radio_fight_pet_defend">
+              <property name="text">
+               <string>防</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QGroupBox" name="groupBox_go">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>100</y>
+             <width>91</width>
+             <height>85</height>
+            </rect>
+           </property>
+           <property name="title">
+            <string>出城</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <widget class="QRadioButton" name="radio_go_dunjia">
+              <property name="text">
+               <string>超级遁甲</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radio_go_run">
+              <property name="text">
+               <string>跑步</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QGroupBox" name="groupBox_back">
+           <property name="geometry">
+            <rect>
+             <x>110</x>
+             <y>100</y>
+             <width>91</width>
+             <height>139</height>
+            </rect>
+           </property>
+           <property name="title">
+            <string>回城</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="QRadioButton" name="radio_back_dunjia">
+              <property name="text">
+               <string>超级遁甲</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radio_back_kaifeng">
+              <property name="text">
+               <string>开封票</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radio_back_menpai">
+              <property name="text">
+               <string>门派票</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="radio_back_run">
+              <property name="text">
+               <string>跑步</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">buttonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </widget>
         </item>
         <item>
@@ -952,6 +1139,120 @@ QTableView::item:hover	{
              <attribute name="title">
               <string>单人相关</string>
              </attribute>
+             <widget class="QGroupBox" name="groupBox_9">
+              <property name="geometry">
+               <rect>
+                <x>20</x>
+                <y>20</y>
+                <width>116</width>
+                <height>291</height>
+               </rect>
+              </property>
+              <property name="title">
+               <string>清理背包</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_9">
+               <item>
+                <widget class="QCheckBox" name="checkBox_4">
+                 <property name="text">
+                  <string>卖箱子</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="checkBox_7">
+                 <property name="text">
+                  <string>卖装备</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="checkBox_8">
+                 <property name="text">
+                  <string>存华丽装备</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_10">
+                 <property name="title">
+                  <string>药材</string>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_7">
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_11">
+                    <property name="text">
+                     <string>存</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_12">
+                    <property name="text">
+                     <string>卖</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_11">
+                 <property name="title">
+                  <string>主辅材</string>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_8">
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_13">
+                    <property name="text">
+                     <string>存</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_14">
+                    <property name="text">
+                     <string>卖</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item>
+                <widget class="QGroupBox" name="groupBox_12">
+                 <property name="title">
+                  <string>杂物</string>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_9">
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_15">
+                    <property name="text">
+                     <string>存</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="radioButton_16">
+                    <property name="text">
+                     <string>卖</string>
+                    </property>
+                    <property name="checked">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+              </layout>
+             </widget>
             </widget>
             <widget class="QWidget" name="tab_6">
              <attribute name="title">
@@ -960,16 +1261,19 @@ QTableView::item:hover	{
              <widget class="QGroupBox" name="groupBox_7">
               <property name="geometry">
                <rect>
-                <x>10</x>
-                <y>110</y>
-                <width>141</width>
-                <height>171</height>
+                <x>290</x>
+                <y>12</y>
+                <width>121</width>
+                <height>211</height>
                </rect>
               </property>
               <property name="title">
                <string>队员挂机</string>
               </property>
-              <layout class="QGridLayout" name="gridLayout_8">
+              <layout class="QVBoxLayout" name="verticalLayout_8">
+               <property name="spacing">
+                <number>3</number>
+               </property>
                <property name="leftMargin">
                 <number>6</number>
                </property>
@@ -982,7 +1286,21 @@ QTableView::item:hover	{
                <property name="bottomMargin">
                 <number>6</number>
                </property>
-               <item row="0" column="0">
+               <item>
+                <widget class="QCheckBox" name="checkBox">
+                 <property name="text">
+                  <string>抓麒麟</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="checkBox_2">
+                 <property name="text">
+                  <string>自动修理 补忠诚</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QCheckBox" name="chk_duiyuan_ls">
                  <property name="minimumSize">
                   <size>
@@ -1004,51 +1322,7 @@ QTableView::item:hover	{
                  </property>
                 </widget>
                </item>
-               <item row="3" column="0">
-                <widget class="QCheckBox" name="chk_duiyuan_td">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>跟随队长退队</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QCheckBox" name="chk_duiyuan_closetalk">
-                 <property name="minimumSize">
-                  <size>
-                   <width>0</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>16777215</width>
-                   <height>16777215</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string>自动关闭对话框</string>
-                 </property>
-                 <property name="checked">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0">
+               <item>
                 <widget class="QCheckBox" name="chk_duiyuan_js">
                  <property name="minimumSize">
                   <size>
@@ -1070,7 +1344,7 @@ QTableView::item:hover	{
                  </property>
                 </widget>
                </item>
-               <item row="2" column="0">
+               <item>
                 <widget class="QCheckBox" name="chk_duiyuan_ds">
                  <property name="minimumSize">
                   <size>
@@ -1092,13 +1366,57 @@ QTableView::item:hover	{
                  </property>
                 </widget>
                </item>
+               <item>
+                <widget class="QCheckBox" name="chk_duiyuan_td">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>跟随队长退队</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="chk_duiyuan_closetalk">
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>自动关闭对话框</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
              <widget class="QGroupBox" name="groupBox_6">
               <property name="geometry">
                <rect>
                 <x>180</x>
-                <y>20</y>
+                <y>12</y>
                 <width>101</width>
                 <height>61</height>
                </rect>
@@ -1182,14 +1500,14 @@ QTableView::item:hover	{
                <rect>
                 <x>10</x>
                 <y>11</y>
-                <width>151</width>
-                <height>81</height>
+                <width>161</width>
+                <height>131</height>
                </rect>
               </property>
               <property name="title">
                <string>带队打野</string>
               </property>
-              <layout class="QGridLayout" name="gridLayout_2">
+              <layout class="QGridLayout" name="gridLayout">
                <property name="leftMargin">
                 <number>6</number>
                </property>
@@ -1201,6 +1519,9 @@ QTableView::item:hover	{
                </property>
                <property name="bottomMargin">
                 <number>6</number>
+               </property>
+               <property name="verticalSpacing">
+                <number>3</number>
                </property>
                <item row="0" column="0">
                 <widget class="QLabel" name="label_4">
@@ -1317,6 +1638,20 @@ QTableView::item:hover	{
                 <widget class="QLabel" name="label_6">
                  <property name="text">
                   <string>分钟</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0" colspan="3">
+                <widget class="QCheckBox" name="checkBox_5">
+                 <property name="text">
+                  <string>自动修理 补忠诚</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0" colspan="3">
+                <widget class="QCheckBox" name="checkBox_6">
+                 <property name="text">
+                  <string>抓麒麟</string>
                  </property>
                 </widget>
                </item>
@@ -1706,11 +2041,11 @@ QTableView::item:hover	{
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../qtres/wnd_main.qrc">
+    <iconset resource="../qt_res/wnd_main.qrc">
      <normaloff>:/control8.png</normaloff>:/control8.png</iconset>
    </property>
    <property name="text">
-    <string>控 制</string>
+    <string>窗口控制</string>
    </property>
    <property name="shortcut">
     <string>Alt+1</string>
@@ -1721,11 +2056,11 @@ QTableView::item:hover	{
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../qtres/wnd_main.qrc">
+    <iconset resource="../qt_res/wnd_main.qrc">
      <normaloff>:/plan7.png</normaloff>:/plan7.png</iconset>
    </property>
    <property name="text">
-    <string>方 案</string>
+    <string>方案配置</string>
    </property>
    <property name="shortcut">
     <string>Alt+2</string>
@@ -1736,11 +2071,11 @@ QTableView::item:hover	{
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../qtres/wnd_main.qrc">
+    <iconset resource="../qt_res/wnd_main.qrc">
      <normaloff>:/gnrl7.png</normaloff>:/gnrl7.png</iconset>
    </property>
    <property name="text">
-    <string>配 置</string>
+    <string>通用配置</string>
    </property>
    <property name="shortcut">
     <string>Alt+3</string>
@@ -1748,7 +2083,10 @@ QTableView::item:hover	{
   </action>
  </widget>
  <resources>
-  <include location="../qtres/wnd_main.qrc"/>
+  <include location="../qt_res/wnd_main.qrc"/>
  </resources>
  <connections/>
+ <buttongroups>
+  <buttongroup name="buttonGroup"/>
+ </buttongroups>
 </ui>

@@ -18,7 +18,7 @@ class Ui_WndMain(object):
     def setupUi(self, WndMain):
         if not WndMain.objectName():
             WndMain.setObjectName(u"WndMain")
-        WndMain.resize(808, 472)
+        WndMain.resize(836, 472)
         WndMain.setMinimumSize(QSize(0, 0))
         WndMain.setMaximumSize(QSize(3000, 2000))
         icon = QIcon()
@@ -194,6 +194,9 @@ class Ui_WndMain(object):
         __qtreewidgetitem1 = QTreeWidgetItem(self.tre_all)
         QTreeWidgetItem(__qtreewidgetitem1)
         QTreeWidgetItem(__qtreewidgetitem1)
+        QTreeWidgetItem(__qtreewidgetitem1)
+        QTreeWidgetItem(__qtreewidgetitem1)
+        QTreeWidgetItem(__qtreewidgetitem1)
         __qtreewidgetitem2 = QTreeWidgetItem(self.tre_all)
         QTreeWidgetItem(__qtreewidgetitem2)
         QTreeWidgetItem(__qtreewidgetitem2)
@@ -352,6 +355,91 @@ class Ui_WndMain(object):
         sizePolicy1.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
         self.groupBox_2.setSizePolicy(sizePolicy1)
         self.groupBox_2.setMinimumSize(QSize(300, 0))
+        self.groupBox_people = QGroupBox(self.groupBox_2)
+        self.groupBox_people.setObjectName(u"groupBox_people")
+        self.groupBox_people.setGeometry(QRect(10, 30, 96, 58))
+        self.groupBox_people.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.groupBox_people.setFlat(False)
+        self.horizontalLayout_5 = QHBoxLayout(self.groupBox_people)
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.radio_fight_people_attack = QRadioButton(self.groupBox_people)
+        self.radio_fight_people_attack.setObjectName(u"radio_fight_people_attack")
+        self.radio_fight_people_attack.setChecked(True)
+
+        self.horizontalLayout_5.addWidget(self.radio_fight_people_attack)
+
+        self.radio_fight_people_defend = QRadioButton(self.groupBox_people)
+        self.radio_fight_people_defend.setObjectName(u"radio_fight_people_defend")
+
+        self.horizontalLayout_5.addWidget(self.radio_fight_people_defend)
+
+        self.groupBox_pet = QGroupBox(self.groupBox_2)
+        self.groupBox_pet.setObjectName(u"groupBox_pet")
+        self.groupBox_pet.setGeometry(QRect(112, 31, 96, 58))
+        self.groupBox_pet.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignTop)
+        self.groupBox_pet.setFlat(False)
+        self.horizontalLayout_6 = QHBoxLayout(self.groupBox_pet)
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.radio_fight_pet_attack = QRadioButton(self.groupBox_pet)
+        self.radio_fight_pet_attack.setObjectName(u"radio_fight_pet_attack")
+        self.radio_fight_pet_attack.setChecked(True)
+
+        self.horizontalLayout_6.addWidget(self.radio_fight_pet_attack)
+
+        self.radio_fight_pet_defend = QRadioButton(self.groupBox_pet)
+        self.radio_fight_pet_defend.setObjectName(u"radio_fight_pet_defend")
+
+        self.horizontalLayout_6.addWidget(self.radio_fight_pet_defend)
+
+        self.groupBox_go = QGroupBox(self.groupBox_2)
+        self.groupBox_go.setObjectName(u"groupBox_go")
+        self.groupBox_go.setGeometry(QRect(10, 100, 91, 85))
+        self.verticalLayout_7 = QVBoxLayout(self.groupBox_go)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.radio_go_dunjia = QRadioButton(self.groupBox_go)
+        self.radio_go_dunjia.setObjectName(u"radio_go_dunjia")
+
+        self.verticalLayout_7.addWidget(self.radio_go_dunjia)
+
+        self.radio_go_run = QRadioButton(self.groupBox_go)
+        self.radio_go_run.setObjectName(u"radio_go_run")
+        self.radio_go_run.setChecked(True)
+
+        self.verticalLayout_7.addWidget(self.radio_go_run)
+
+        self.groupBox_back = QGroupBox(self.groupBox_2)
+        self.groupBox_back.setObjectName(u"groupBox_back")
+        self.groupBox_back.setGeometry(QRect(110, 100, 91, 139))
+        self.verticalLayout_6 = QVBoxLayout(self.groupBox_back)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.radio_back_dunjia = QRadioButton(self.groupBox_back)
+        self.buttonGroup = QButtonGroup(WndMain)
+        self.buttonGroup.setObjectName(u"buttonGroup")
+        self.buttonGroup.addButton(self.radio_back_dunjia)
+        self.radio_back_dunjia.setObjectName(u"radio_back_dunjia")
+
+        self.verticalLayout_6.addWidget(self.radio_back_dunjia)
+
+        self.radio_back_kaifeng = QRadioButton(self.groupBox_back)
+        self.buttonGroup.addButton(self.radio_back_kaifeng)
+        self.radio_back_kaifeng.setObjectName(u"radio_back_kaifeng")
+        self.radio_back_kaifeng.setChecked(True)
+
+        self.verticalLayout_6.addWidget(self.radio_back_kaifeng)
+
+        self.radio_back_menpai = QRadioButton(self.groupBox_back)
+        self.buttonGroup.addButton(self.radio_back_menpai)
+        self.radio_back_menpai.setObjectName(u"radio_back_menpai")
+        self.radio_back_menpai.setChecked(False)
+
+        self.verticalLayout_6.addWidget(self.radio_back_menpai)
+
+        self.radio_back_run = QRadioButton(self.groupBox_back)
+        self.buttonGroup.addButton(self.radio_back_run)
+        self.radio_back_run.setObjectName(u"radio_back_run")
+
+        self.verticalLayout_6.addWidget(self.radio_back_run)
+
 
         self.horizontalLayout_4.addWidget(self.groupBox_2)
 
@@ -387,38 +475,107 @@ class Ui_WndMain(object):
         self.tab_set.setIconSize(QSize(32, 32))
         self.tab_5 = QWidget()
         self.tab_5.setObjectName(u"tab_5")
+        self.groupBox_9 = QGroupBox(self.tab_5)
+        self.groupBox_9.setObjectName(u"groupBox_9")
+        self.groupBox_9.setGeometry(QRect(20, 20, 116, 291))
+        self.verticalLayout_9 = QVBoxLayout(self.groupBox_9)
+        self.verticalLayout_9.setObjectName(u"verticalLayout_9")
+        self.checkBox_4 = QCheckBox(self.groupBox_9)
+        self.checkBox_4.setObjectName(u"checkBox_4")
+
+        self.verticalLayout_9.addWidget(self.checkBox_4)
+
+        self.checkBox_7 = QCheckBox(self.groupBox_9)
+        self.checkBox_7.setObjectName(u"checkBox_7")
+
+        self.verticalLayout_9.addWidget(self.checkBox_7)
+
+        self.checkBox_8 = QCheckBox(self.groupBox_9)
+        self.checkBox_8.setObjectName(u"checkBox_8")
+
+        self.verticalLayout_9.addWidget(self.checkBox_8)
+
+        self.groupBox_10 = QGroupBox(self.groupBox_9)
+        self.groupBox_10.setObjectName(u"groupBox_10")
+        self.horizontalLayout_7 = QHBoxLayout(self.groupBox_10)
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.radioButton_11 = QRadioButton(self.groupBox_10)
+        self.radioButton_11.setObjectName(u"radioButton_11")
+
+        self.horizontalLayout_7.addWidget(self.radioButton_11)
+
+        self.radioButton_12 = QRadioButton(self.groupBox_10)
+        self.radioButton_12.setObjectName(u"radioButton_12")
+        self.radioButton_12.setChecked(True)
+
+        self.horizontalLayout_7.addWidget(self.radioButton_12)
+
+
+        self.verticalLayout_9.addWidget(self.groupBox_10)
+
+        self.groupBox_11 = QGroupBox(self.groupBox_9)
+        self.groupBox_11.setObjectName(u"groupBox_11")
+        self.horizontalLayout_8 = QHBoxLayout(self.groupBox_11)
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.radioButton_13 = QRadioButton(self.groupBox_11)
+        self.radioButton_13.setObjectName(u"radioButton_13")
+
+        self.horizontalLayout_8.addWidget(self.radioButton_13)
+
+        self.radioButton_14 = QRadioButton(self.groupBox_11)
+        self.radioButton_14.setObjectName(u"radioButton_14")
+        self.radioButton_14.setChecked(True)
+
+        self.horizontalLayout_8.addWidget(self.radioButton_14)
+
+
+        self.verticalLayout_9.addWidget(self.groupBox_11)
+
+        self.groupBox_12 = QGroupBox(self.groupBox_9)
+        self.groupBox_12.setObjectName(u"groupBox_12")
+        self.horizontalLayout_9 = QHBoxLayout(self.groupBox_12)
+        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.radioButton_15 = QRadioButton(self.groupBox_12)
+        self.radioButton_15.setObjectName(u"radioButton_15")
+
+        self.horizontalLayout_9.addWidget(self.radioButton_15)
+
+        self.radioButton_16 = QRadioButton(self.groupBox_12)
+        self.radioButton_16.setObjectName(u"radioButton_16")
+        self.radioButton_16.setChecked(True)
+
+        self.horizontalLayout_9.addWidget(self.radioButton_16)
+
+
+        self.verticalLayout_9.addWidget(self.groupBox_12)
+
         self.tab_set.addTab(self.tab_5, "")
         self.tab_6 = QWidget()
         self.tab_6.setObjectName(u"tab_6")
         self.groupBox_7 = QGroupBox(self.tab_6)
         self.groupBox_7.setObjectName(u"groupBox_7")
-        self.groupBox_7.setGeometry(QRect(10, 110, 141, 171))
-        self.gridLayout_8 = QGridLayout(self.groupBox_7)
-        self.gridLayout_8.setObjectName(u"gridLayout_8")
-        self.gridLayout_8.setContentsMargins(6, 6, 6, 6)
+        self.groupBox_7.setGeometry(QRect(290, 12, 121, 211))
+        self.verticalLayout_8 = QVBoxLayout(self.groupBox_7)
+        self.verticalLayout_8.setSpacing(3)
+        self.verticalLayout_8.setObjectName(u"verticalLayout_8")
+        self.verticalLayout_8.setContentsMargins(6, 6, 6, 6)
+        self.checkBox = QCheckBox(self.groupBox_7)
+        self.checkBox.setObjectName(u"checkBox")
+
+        self.verticalLayout_8.addWidget(self.checkBox)
+
+        self.checkBox_2 = QCheckBox(self.groupBox_7)
+        self.checkBox_2.setObjectName(u"checkBox_2")
+
+        self.verticalLayout_8.addWidget(self.checkBox_2)
+
         self.chk_duiyuan_ls = QCheckBox(self.groupBox_7)
         self.chk_duiyuan_ls.setObjectName(u"chk_duiyuan_ls")
         self.chk_duiyuan_ls.setMinimumSize(QSize(0, 20))
         self.chk_duiyuan_ls.setMaximumSize(QSize(16777215, 16777215))
         self.chk_duiyuan_ls.setChecked(True)
 
-        self.gridLayout_8.addWidget(self.chk_duiyuan_ls, 0, 0, 1, 1)
-
-        self.chk_duiyuan_td = QCheckBox(self.groupBox_7)
-        self.chk_duiyuan_td.setObjectName(u"chk_duiyuan_td")
-        self.chk_duiyuan_td.setMinimumSize(QSize(0, 20))
-        self.chk_duiyuan_td.setMaximumSize(QSize(16777215, 16777215))
-        self.chk_duiyuan_td.setChecked(True)
-
-        self.gridLayout_8.addWidget(self.chk_duiyuan_td, 3, 0, 1, 1)
-
-        self.chk_duiyuan_closetalk = QCheckBox(self.groupBox_7)
-        self.chk_duiyuan_closetalk.setObjectName(u"chk_duiyuan_closetalk")
-        self.chk_duiyuan_closetalk.setMinimumSize(QSize(0, 20))
-        self.chk_duiyuan_closetalk.setMaximumSize(QSize(16777215, 16777215))
-        self.chk_duiyuan_closetalk.setChecked(True)
-
-        self.gridLayout_8.addWidget(self.chk_duiyuan_closetalk, 4, 0, 1, 1)
+        self.verticalLayout_8.addWidget(self.chk_duiyuan_ls)
 
         self.chk_duiyuan_js = QCheckBox(self.groupBox_7)
         self.chk_duiyuan_js.setObjectName(u"chk_duiyuan_js")
@@ -426,7 +583,7 @@ class Ui_WndMain(object):
         self.chk_duiyuan_js.setMaximumSize(QSize(16777215, 16777215))
         self.chk_duiyuan_js.setChecked(True)
 
-        self.gridLayout_8.addWidget(self.chk_duiyuan_js, 1, 0, 1, 1)
+        self.verticalLayout_8.addWidget(self.chk_duiyuan_js)
 
         self.chk_duiyuan_ds = QCheckBox(self.groupBox_7)
         self.chk_duiyuan_ds.setObjectName(u"chk_duiyuan_ds")
@@ -434,11 +591,27 @@ class Ui_WndMain(object):
         self.chk_duiyuan_ds.setMaximumSize(QSize(16777215, 16777215))
         self.chk_duiyuan_ds.setChecked(True)
 
-        self.gridLayout_8.addWidget(self.chk_duiyuan_ds, 2, 0, 1, 1)
+        self.verticalLayout_8.addWidget(self.chk_duiyuan_ds)
+
+        self.chk_duiyuan_td = QCheckBox(self.groupBox_7)
+        self.chk_duiyuan_td.setObjectName(u"chk_duiyuan_td")
+        self.chk_duiyuan_td.setMinimumSize(QSize(0, 20))
+        self.chk_duiyuan_td.setMaximumSize(QSize(16777215, 16777215))
+        self.chk_duiyuan_td.setChecked(True)
+
+        self.verticalLayout_8.addWidget(self.chk_duiyuan_td)
+
+        self.chk_duiyuan_closetalk = QCheckBox(self.groupBox_7)
+        self.chk_duiyuan_closetalk.setObjectName(u"chk_duiyuan_closetalk")
+        self.chk_duiyuan_closetalk.setMinimumSize(QSize(0, 20))
+        self.chk_duiyuan_closetalk.setMaximumSize(QSize(16777215, 16777215))
+        self.chk_duiyuan_closetalk.setChecked(True)
+
+        self.verticalLayout_8.addWidget(self.chk_duiyuan_closetalk)
 
         self.groupBox_6 = QGroupBox(self.tab_6)
         self.groupBox_6.setObjectName(u"groupBox_6")
-        self.groupBox_6.setGeometry(QRect(180, 20, 101, 61))
+        self.groupBox_6.setGeometry(QRect(180, 12, 101, 61))
         self.gridLayout_9 = QGridLayout(self.groupBox_6)
         self.gridLayout_9.setSpacing(4)
         self.gridLayout_9.setObjectName(u"gridLayout_9")
@@ -466,14 +639,15 @@ class Ui_WndMain(object):
 
         self.groupBox = QGroupBox(self.tab_6)
         self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(10, 11, 151, 81))
-        self.gridLayout_2 = QGridLayout(self.groupBox)
-        self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.gridLayout_2.setContentsMargins(6, 6, 6, 6)
+        self.groupBox.setGeometry(QRect(10, 11, 161, 131))
+        self.gridLayout = QGridLayout(self.groupBox)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setVerticalSpacing(3)
+        self.gridLayout.setContentsMargins(6, 6, 6, 6)
         self.label_4 = QLabel(self.groupBox)
         self.label_4.setObjectName(u"label_4")
 
-        self.gridLayout_2.addWidget(self.label_4, 0, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_4, 0, 0, 1, 1)
 
         self.cmb_daye_map = QComboBox(self.groupBox)
         self.cmb_daye_map.addItem("")
@@ -490,12 +664,12 @@ class Ui_WndMain(object):
         self.cmb_daye_map.setMinimumSize(QSize(0, 20))
         self.cmb_daye_map.setMaximumSize(QSize(16777215, 20))
 
-        self.gridLayout_2.addWidget(self.cmb_daye_map, 0, 1, 1, 2)
+        self.gridLayout.addWidget(self.cmb_daye_map, 0, 1, 1, 2)
 
         self.label_5 = QLabel(self.groupBox)
         self.label_5.setObjectName(u"label_5")
 
-        self.gridLayout_2.addWidget(self.label_5, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.label_5, 1, 0, 1, 1)
 
         self.edt_daye_time = QLineEdit(self.groupBox)
         self.edt_daye_time.setObjectName(u"edt_daye_time")
@@ -503,12 +677,22 @@ class Ui_WndMain(object):
         self.edt_daye_time.setMaximumSize(QSize(16777215, 20))
         self.edt_daye_time.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_2.addWidget(self.edt_daye_time, 1, 1, 1, 1)
+        self.gridLayout.addWidget(self.edt_daye_time, 1, 1, 1, 1)
 
         self.label_6 = QLabel(self.groupBox)
         self.label_6.setObjectName(u"label_6")
 
-        self.gridLayout_2.addWidget(self.label_6, 1, 2, 1, 1)
+        self.gridLayout.addWidget(self.label_6, 1, 2, 1, 1)
+
+        self.checkBox_5 = QCheckBox(self.groupBox)
+        self.checkBox_5.setObjectName(u"checkBox_5")
+
+        self.gridLayout.addWidget(self.checkBox_5, 2, 0, 1, 3)
+
+        self.checkBox_6 = QCheckBox(self.groupBox)
+        self.checkBox_6.setObjectName(u"checkBox_6")
+
+        self.gridLayout.addWidget(self.checkBox_6, 3, 0, 1, 3)
 
         self.tab_set.addTab(self.tab_6, "")
         self.tab = QWidget()
@@ -699,15 +883,15 @@ class Ui_WndMain(object):
 
     def retranslateUi(self, WndMain):
         WndMain.setWindowTitle(QCoreApplication.translate("WndMain", u"Robot", None))
-        self.action_console.setText(QCoreApplication.translate("WndMain", u"\u63a7 \u5236", None))
+        self.action_console.setText(QCoreApplication.translate("WndMain", u"\u7a97\u53e3\u63a7\u5236", None))
 #if QT_CONFIG(shortcut)
         self.action_console.setShortcut(QCoreApplication.translate("WndMain", u"Alt+1", None))
 #endif // QT_CONFIG(shortcut)
-        self.action_plan.setText(QCoreApplication.translate("WndMain", u"\u65b9 \u6848", None))
+        self.action_plan.setText(QCoreApplication.translate("WndMain", u"\u65b9\u6848\u914d\u7f6e", None))
 #if QT_CONFIG(shortcut)
         self.action_plan.setShortcut(QCoreApplication.translate("WndMain", u"Alt+2", None))
 #endif // QT_CONFIG(shortcut)
-        self.action_setting.setText(QCoreApplication.translate("WndMain", u"\u914d \u7f6e", None))
+        self.action_setting.setText(QCoreApplication.translate("WndMain", u"\u901a\u7528\u914d\u7f6e", None))
 #if QT_CONFIG(shortcut)
         self.action_setting.setShortcut(QCoreApplication.translate("WndMain", u"Alt+3", None))
 #endif // QT_CONFIG(shortcut)
@@ -833,30 +1017,36 @@ class Ui_WndMain(object):
         ___qtreewidgetitem2.setText(0, QCoreApplication.translate("WndMain", u"\u56db\u8c61\u8dd1\u73af", None));
         ___qtreewidgetitem3 = ___qtreewidgetitem1.child(1)
         ___qtreewidgetitem3.setText(0, QCoreApplication.translate("WndMain", u"\u5e08\u95e8\u8dd1\u73af", None));
-        ___qtreewidgetitem4 = self.tre_all.topLevelItem(1)
-        ___qtreewidgetitem4.setText(0, QCoreApplication.translate("WndMain", u"\u7ec4\u961f", None));
-        ___qtreewidgetitem5 = ___qtreewidgetitem4.child(0)
-        ___qtreewidgetitem5.setText(0, QCoreApplication.translate("WndMain", u"\u961f\u5458\u6302\u673a", None));
-        ___qtreewidgetitem6 = ___qtreewidgetitem4.child(1)
-        ___qtreewidgetitem6.setText(0, QCoreApplication.translate("WndMain", u"\u5e26\u961f\u5237\u91ce", None));
-        ___qtreewidgetitem7 = ___qtreewidgetitem4.child(2)
-        ___qtreewidgetitem7.setText(0, QCoreApplication.translate("WndMain", u"\u5e26\u961f\u6253\u725b", None));
-        ___qtreewidgetitem8 = ___qtreewidgetitem4.child(3)
-        ___qtreewidgetitem8.setText(0, QCoreApplication.translate("WndMain", u"\u5e26\u961f\u6253\u864e", None));
-        ___qtreewidgetitem9 = ___qtreewidgetitem4.child(4)
-        ___qtreewidgetitem9.setText(0, QCoreApplication.translate("WndMain", u"\u5e26\u961f\u5e73\u4e71", None));
-        ___qtreewidgetitem10 = ___qtreewidgetitem4.child(5)
-        ___qtreewidgetitem10.setText(0, QCoreApplication.translate("WndMain", u"\u5e26\u961f\u5a01\u671b", None));
-        ___qtreewidgetitem11 = self.tre_all.topLevelItem(2)
-        ___qtreewidgetitem11.setText(0, QCoreApplication.translate("WndMain", u"\u5176\u5b83", None));
-        ___qtreewidgetitem12 = ___qtreewidgetitem11.child(0)
-        ___qtreewidgetitem12.setText(0, QCoreApplication.translate("WndMain", u"\u9886\u53d6\u53cc\u500d", None));
-        ___qtreewidgetitem13 = ___qtreewidgetitem11.child(1)
-        ___qtreewidgetitem13.setText(0, QCoreApplication.translate("WndMain", u"\u51bb\u7ed3\u53cc\u500d", None));
-        ___qtreewidgetitem14 = ___qtreewidgetitem11.child(2)
-        ___qtreewidgetitem14.setText(0, QCoreApplication.translate("WndMain", u"\u9000\u51fa\u961f\u4f0d", None));
-        ___qtreewidgetitem15 = ___qtreewidgetitem11.child(3)
-        ___qtreewidgetitem15.setText(0, QCoreApplication.translate("WndMain", u"\u6e05\u7406\u80cc\u5305", None));
+        ___qtreewidgetitem4 = ___qtreewidgetitem1.child(2)
+        ___qtreewidgetitem4.setText(0, QCoreApplication.translate("WndMain", u"\u6781\u9650\u6311\u6218", None));
+        ___qtreewidgetitem5 = ___qtreewidgetitem1.child(3)
+        ___qtreewidgetitem5.setText(0, QCoreApplication.translate("WndMain", u"\u5185\u529f\u95ed\u5173", None));
+        ___qtreewidgetitem6 = ___qtreewidgetitem1.child(4)
+        ___qtreewidgetitem6.setText(0, QCoreApplication.translate("WndMain", u"\u7ecf\u8109\u8d2f\u901a", None));
+        ___qtreewidgetitem7 = self.tre_all.topLevelItem(1)
+        ___qtreewidgetitem7.setText(0, QCoreApplication.translate("WndMain", u"\u7ec4\u961f", None));
+        ___qtreewidgetitem8 = ___qtreewidgetitem7.child(0)
+        ___qtreewidgetitem8.setText(0, QCoreApplication.translate("WndMain", u"\u961f\u5458\u6302\u673a", None));
+        ___qtreewidgetitem9 = ___qtreewidgetitem7.child(1)
+        ___qtreewidgetitem9.setText(0, QCoreApplication.translate("WndMain", u"\u5e26\u961f\u5237\u91ce", None));
+        ___qtreewidgetitem10 = ___qtreewidgetitem7.child(2)
+        ___qtreewidgetitem10.setText(0, QCoreApplication.translate("WndMain", u"\u5e26\u961f\u6253\u725b", None));
+        ___qtreewidgetitem11 = ___qtreewidgetitem7.child(3)
+        ___qtreewidgetitem11.setText(0, QCoreApplication.translate("WndMain", u"\u5e26\u961f\u6253\u864e", None));
+        ___qtreewidgetitem12 = ___qtreewidgetitem7.child(4)
+        ___qtreewidgetitem12.setText(0, QCoreApplication.translate("WndMain", u"\u5e26\u961f\u5e73\u4e71", None));
+        ___qtreewidgetitem13 = ___qtreewidgetitem7.child(5)
+        ___qtreewidgetitem13.setText(0, QCoreApplication.translate("WndMain", u"\u5e26\u961f\u5a01\u671b", None));
+        ___qtreewidgetitem14 = self.tre_all.topLevelItem(2)
+        ___qtreewidgetitem14.setText(0, QCoreApplication.translate("WndMain", u"\u5176\u5b83", None));
+        ___qtreewidgetitem15 = ___qtreewidgetitem14.child(0)
+        ___qtreewidgetitem15.setText(0, QCoreApplication.translate("WndMain", u"\u9886\u53d6\u53cc\u500d", None));
+        ___qtreewidgetitem16 = ___qtreewidgetitem14.child(1)
+        ___qtreewidgetitem16.setText(0, QCoreApplication.translate("WndMain", u"\u51bb\u7ed3\u53cc\u500d", None));
+        ___qtreewidgetitem17 = ___qtreewidgetitem14.child(2)
+        ___qtreewidgetitem17.setText(0, QCoreApplication.translate("WndMain", u"\u9000\u51fa\u961f\u4f0d", None));
+        ___qtreewidgetitem18 = ___qtreewidgetitem14.child(3)
+        ___qtreewidgetitem18.setText(0, QCoreApplication.translate("WndMain", u"\u6e05\u7406\u80cc\u5305", None));
         self.tre_all.setSortingEnabled(__sortingEnabled1)
 
 #if QT_CONFIG(tooltip)
@@ -869,7 +1059,10 @@ class Ui_WndMain(object):
 #if QT_CONFIG(tooltip)
         self.btn_plan_save.setToolTip(QCoreApplication.translate("WndMain", u"\u4fdd\u5b58 \u6267\u884c\u5217\u8868\u548c\u6218\u6597\u8bbe\u7f6e \u5230 \u9009\u4e2d\u65b9\u6848, \u672a\u9009\u62e9\u65b9\u6848\u5219\u4fdd\u5b58\u5230\u5185\u7f6e\u9ed8\u8ba4\u65b9\u6848\u4e2d", None))
 #endif // QT_CONFIG(tooltip)
-        self.btn_plan_save.setText(QCoreApplication.translate("WndMain", u"\u4fdd\u5b58\u5230\u65b9\u6848\u2192", None))
+        self.btn_plan_save.setText(QCoreApplication.translate("WndMain", u" \u4fdd  \u5b58\n"
+"\u6267\u884c\u5217\u8868\n"
+"\u81f3\u9009\u4e2d\u65b9\u6848\n"
+"\u2192", None))
         self.label_53.setText(QCoreApplication.translate("WndMain", u"\u65b9\u6848\u5217\u8868", None))
 #if QT_CONFIG(tooltip)
         self.lst_plan.setToolTip(QCoreApplication.translate("WndMain", u"\u53cc\u51fb\u5217\u8868\u9879\u53ef\u8bfb\u53d6\u6307\u5b9a\u65b9\u6848\u5230\u63a7\u4ef6", None))
@@ -877,14 +1070,43 @@ class Ui_WndMain(object):
         self.btn_plan_create.setText(QCoreApplication.translate("WndMain", u"\u65b0\u5efa", None))
         self.btn_plan_rename.setText(QCoreApplication.translate("WndMain", u"\u91cd\u547d\u540d", None))
         self.label_54.setText(QCoreApplication.translate("WndMain", u"\u65b0\u65b9\u6848\u540d", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("WndMain", u"\u65b9\u6848-\u57fa\u672c\u914d\u7f6e", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("WndMain", u"\u65b9\u6848\u914d\u7f6e", None))
+        self.groupBox_people.setTitle(QCoreApplication.translate("WndMain", u"\u4eba\u7269\u6218\u6597", None))
+        self.radio_fight_people_attack.setText(QCoreApplication.translate("WndMain", u"\u653b", None))
+        self.radio_fight_people_defend.setText(QCoreApplication.translate("WndMain", u"\u9632", None))
+        self.groupBox_pet.setTitle(QCoreApplication.translate("WndMain", u"\u5ba0\u7269\u6218\u6597", None))
+        self.radio_fight_pet_attack.setText(QCoreApplication.translate("WndMain", u"\u653b", None))
+        self.radio_fight_pet_defend.setText(QCoreApplication.translate("WndMain", u"\u9632", None))
+        self.groupBox_go.setTitle(QCoreApplication.translate("WndMain", u"\u51fa\u57ce", None))
+        self.radio_go_dunjia.setText(QCoreApplication.translate("WndMain", u"\u8d85\u7ea7\u9041\u7532", None))
+        self.radio_go_run.setText(QCoreApplication.translate("WndMain", u"\u8dd1\u6b65", None))
+        self.groupBox_back.setTitle(QCoreApplication.translate("WndMain", u"\u56de\u57ce", None))
+        self.radio_back_dunjia.setText(QCoreApplication.translate("WndMain", u"\u8d85\u7ea7\u9041\u7532", None))
+        self.radio_back_kaifeng.setText(QCoreApplication.translate("WndMain", u"\u5f00\u5c01\u7968", None))
+        self.radio_back_menpai.setText(QCoreApplication.translate("WndMain", u"\u95e8\u6d3e\u7968", None))
+        self.radio_back_run.setText(QCoreApplication.translate("WndMain", u"\u8dd1\u6b65", None))
+        self.groupBox_9.setTitle(QCoreApplication.translate("WndMain", u"\u6e05\u7406\u80cc\u5305", None))
+        self.checkBox_4.setText(QCoreApplication.translate("WndMain", u"\u5356\u7bb1\u5b50", None))
+        self.checkBox_7.setText(QCoreApplication.translate("WndMain", u"\u5356\u88c5\u5907", None))
+        self.checkBox_8.setText(QCoreApplication.translate("WndMain", u"\u5b58\u534e\u4e3d\u88c5\u5907", None))
+        self.groupBox_10.setTitle(QCoreApplication.translate("WndMain", u"\u836f\u6750", None))
+        self.radioButton_11.setText(QCoreApplication.translate("WndMain", u"\u5b58", None))
+        self.radioButton_12.setText(QCoreApplication.translate("WndMain", u"\u5356", None))
+        self.groupBox_11.setTitle(QCoreApplication.translate("WndMain", u"\u4e3b\u8f85\u6750", None))
+        self.radioButton_13.setText(QCoreApplication.translate("WndMain", u"\u5b58", None))
+        self.radioButton_14.setText(QCoreApplication.translate("WndMain", u"\u5356", None))
+        self.groupBox_12.setTitle(QCoreApplication.translate("WndMain", u"\u6742\u7269", None))
+        self.radioButton_15.setText(QCoreApplication.translate("WndMain", u"\u5b58", None))
+        self.radioButton_16.setText(QCoreApplication.translate("WndMain", u"\u5356", None))
         self.tab_set.setTabText(self.tab_set.indexOf(self.tab_5), QCoreApplication.translate("WndMain", u"\u5355\u4eba\u76f8\u5173", None))
         self.groupBox_7.setTitle(QCoreApplication.translate("WndMain", u"\u961f\u5458\u6302\u673a", None))
+        self.checkBox.setText(QCoreApplication.translate("WndMain", u"\u6293\u9e92\u9e9f", None))
+        self.checkBox_2.setText(QCoreApplication.translate("WndMain", u"\u81ea\u52a8\u4fee\u7406 \u8865\u5fe0\u8bda", None))
         self.chk_duiyuan_ls.setText(QCoreApplication.translate("WndMain", u"\u8ddf\u968f\u961f\u957f\u9886\u53cc", None))
-        self.chk_duiyuan_td.setText(QCoreApplication.translate("WndMain", u"\u8ddf\u968f\u961f\u957f\u9000\u961f", None))
-        self.chk_duiyuan_closetalk.setText(QCoreApplication.translate("WndMain", u"\u81ea\u52a8\u5173\u95ed\u5bf9\u8bdd\u6846", None))
         self.chk_duiyuan_js.setText(QCoreApplication.translate("WndMain", u"\u8ddf\u968f\u961f\u957f\u89e3\u51bb\u53cc", None))
         self.chk_duiyuan_ds.setText(QCoreApplication.translate("WndMain", u"\u8ddf\u968f\u961f\u957f\u51bb\u53cc", None))
+        self.chk_duiyuan_td.setText(QCoreApplication.translate("WndMain", u"\u8ddf\u968f\u961f\u957f\u9000\u961f", None))
+        self.chk_duiyuan_closetalk.setText(QCoreApplication.translate("WndMain", u"\u81ea\u52a8\u5173\u95ed\u5bf9\u8bdd\u6846", None))
         self.groupBox_6.setTitle(QCoreApplication.translate("WndMain", u"\u9886\u53d6\u53cc\u500d", None))
         self.label_17.setText(QCoreApplication.translate("WndMain", u"\u65f6\u95f4", None))
         self.cmb_double_time.setItemText(0, QCoreApplication.translate("WndMain", u"1\u5c0f\u65f6", None))
@@ -911,6 +1133,8 @@ class Ui_WndMain(object):
 #endif // QT_CONFIG(tooltip)
         self.edt_daye_time.setText(QCoreApplication.translate("WndMain", u"600", None))
         self.label_6.setText(QCoreApplication.translate("WndMain", u"\u5206\u949f", None))
+        self.checkBox_5.setText(QCoreApplication.translate("WndMain", u"\u81ea\u52a8\u4fee\u7406 \u8865\u5fe0\u8bda", None))
+        self.checkBox_6.setText(QCoreApplication.translate("WndMain", u"\u6293\u9e92\u9e9f", None))
         self.tab_set.setTabText(self.tab_set.indexOf(self.tab_6), QCoreApplication.translate("WndMain", u"\u7ec4\u961f\u76f8\u5173", None))
         self.chk_on_time.setTitle(QCoreApplication.translate("WndMain", u"\u5b9a\u65f6", None))
         self.chk_on_time_run_all.setText(QCoreApplication.translate("WndMain", u"\u8fd0\u884c\u5168\u90e8\u7a97\u53e3", None))

@@ -1,4 +1,5 @@
 # 标准库
+from ctypes import util
 from threading import Thread
 import time
 import copy
@@ -15,8 +16,8 @@ import common
 from call import ThreadExec
 import utils
 from utils.wnd import arrange_all_wnd, get_main_screen_wh
-from utils.plugin import pass_dm_vip
 from utils.file import json_file_to_dict
+from utils.msg_box import MyMsgBox, TimeMsgBox
 from const import const
 from utils.log import log
 import settings
@@ -28,7 +29,6 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     def __init__(self):
         super().__init__()
-        
         # 安装界面
         self.setupUi(self)
         # 初始化自定义信号槽
@@ -52,7 +52,7 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     def closeEvent(self, event: QCloseEvent):
         self.diag.close()
-        self.send_recv_offline()
+        # self.send_recv_offline()
 
     # 最小化到托盘区
     def changeEvent(self, event: QEvent):
@@ -62,15 +62,39 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     # 读取配置
     def cfg_read(self):
-        settings.cfg_common = json_file_to_dict(const.PATH_SOFTWARE_CONFIG, settings.cfg_common)
-        # 界面设置
-        self.cmb_mode.setCurrentText(settings.cfg_common["绑定模式"])
-        self.chk_ban_sys_sleep.setChecked(settings.cfg_common["禁用系统睡眠"])
-        self.chk_ban_screen_protect.setChecked(settings.cfg_common["禁用屏幕保护"])
-        self.cmb_arrange_get_wnd.setCurrentText(settings.cfg_common["获取窗口后排列方式"])
+        settings.cfg_common = json_file_to_dict(
+            const.PATH_SOFTWARE_COMMON, settings.cfg_common)
+        # 通用设置
+        self.cmb_mode.setCurrentText(settings.cfg_common.get("绑定模式", "模式0"))
+        self.chk_ban_sys_sleep.setChecked(
+            settings.cfg_common.get("禁用系统休眠", False))
+        self.chk_ban_screen_protect.setChecked(
+            settings.cfg_common.get("禁用屏幕保护", False))
+        self.cmb_arrange_get_wnd.setCurrentText(
+            settings.cfg_common.get("获取窗口后排列方式", "0"))
         self.cmb_set_plan_get_wnd.setCurrentText(
-            settings.cfg_common["获取窗口后设置方案"])
-        self.cmb_set_plan_db_col.setCurrentText(settings.cfg_common["双击方案列设置方案"])
+            settings.cfg_common.get("获取窗口后设置方案", "0"))
+        self.cmb_set_plan_db_col.setCurrentText(
+            settings.cfg_common.get("双击方案列设置方案", "0"))
+        # TODO:方案配置
+        settings.cfg_plan_dict = json_file_to_dict(
+            const.PATH_SOFTWARE_PLAN, settings.cfg_plan_dict)
+        print("settings.cfg_plan_dict:", settings.cfg_plan_dict)
+        for plan_name, cfg_plan_load in settings.cfg_plan_dict.items():
+            # 逐个方案更新, 否则会直接替换整个cfg_plan
+            if not settings.cfg_plan_dict.get(plan_name):  # 用户自定义的方案
+                settings.cfg_plan_dict[plan_name] = copy.deepcopy(
+                    settings.cfg_plan)  # 先读取默认方案
+                self.lst_plan.addItem(plan_name)  # 添加到方案列表中
+            # 用配置文件更新
+            settings.cfg_plan_dict[plan_name].update(cfg_plan_load)
+        else:  # 如果没有任何方案配置，则加入 ‘0内置默认’
+            self.lst_plan.addItem('0内置默认')
+            self.lst_plan.setCurrentRow(0)
+            settings.cfg_plan_dict['0内置默认'] = self.get_plan_setting_dict()
+        cur_plan = self.lst_plan.currentItem().text()
+        cur_plan_dict = settings.cfg_plan_dict.get(cur_plan)
+        self.set_plan_setting_dict(cur_plan_dict)
 
     # 保存配置
     def cfg_save(self):
@@ -82,7 +106,7 @@ class WndMain(QMainWindow, Ui_WndMain):
         settings.cfg_common["获取窗口后排列方式"] = self.cmb_arrange_get_wnd.currentText()
         settings.cfg_common["获取窗口后设置方案"] = self.cmb_set_plan_get_wnd.currentText()
         settings.cfg_common["双击方案列设置方案"] = self.cmb_set_plan_db_col.currentText()
-        settings.dict_to_json_file(settings.cfg_common, settings.PATH_JSON_MAIN)
+        utils.dict_to_json_file(settings.cfg_common, const.PATH_SOFTWARE_COMMON)
 
     def init_custom_sig_slot(self):
         self.sig_info.connect(
@@ -188,18 +212,6 @@ class WndMain(QMainWindow, Ui_WndMain):
                 color = QColor(255, 246, 243)
             for col in range(const.TBE_CONSOLE_COL):
                 tbe_console.item(row, col).setBackgroundColor(color)
-        # ------------------------- 列表框 -------------------------
-        settings.cfg_plan_dict = json_file_to_dict(
-            const.PATH_SOFTWARE_PLAN, settings.cfg_plan_dict)
-        print("settings.cfg_plan_dict:", settings.cfg_plan_dict)
-        for plan_name, cfg_plan_load in settings.cfg_plan_dict.items():
-            # 逐个方案更新, 否则会直接替换整个cfg_plan
-            if not settings.cfg_plan_dict.get(plan_name):  # 用户自定义的方案
-                settings.cfg_plan_dict[plan_name] = copy.deepcopy(
-                    settings.cfg_plan)  # 先读取默认方案
-                self.lst_plan.addItem(plan_name)  # 添加到方案列表中
-            # 用配置文件更新
-            settings.cfg_plan_dict[plan_name].update(cfg_plan_load)
         # ------------------------- 下拉框 -------------------------
         plan_list = settings.cfg_plan_dict.keys()
         for cmb_plan in settings.cmb_plan_list:
@@ -391,6 +403,26 @@ class WndMain(QMainWindow, Ui_WndMain):
     def show_tip(self, tip: str):
         self.lbe_info.setText(tip)
 
+    def get_plan_setting_dict(self):
+        items_text = [self.lst_exec.item(idx).text() for idx in range(self.lst_exec.count())]
+        return {
+            '执行列表': items_text,
+            '人物战斗': utils.get_checked_radio_text_in_groupbox(self.groupBox_people),
+            '宠物战斗': utils.get_checked_radio_text_in_groupbox(self.groupBox_pet),
+            '出城': utils.get_checked_radio_text_in_groupbox(self.groupBox_go),
+            '回城': utils.get_checked_radio_text_in_groupbox(self.groupBox_back),
+        }
+    
+    def set_plan_setting_dict(self, plan_setting_dict: dict):
+        if plan_setting_dict is None:
+            return
+        self.lst_exec.clear()
+        self.lst_exec.addItems(plan_setting_dict.get('执行列表', []))
+        utils.set_checked_radio_text_in_groupbox(self.groupBox_people, plan_setting_dict.get('人物战斗', ''))
+        utils.set_checked_radio_text_in_groupbox(self.groupBox_pet, plan_setting_dict.get('宠物战斗', ''))
+        utils.set_checked_radio_text_in_groupbox(self.groupBox_go, plan_setting_dict.get('出城', ''))
+        utils.set_checked_radio_text_in_groupbox(self.groupBox_back, plan_setting_dict.get('回城', ''))
+
     # def thd_heart_beat(self):
     #     while True:
     #         # 每一轮循环错误次数+1, 失败则每隔20秒连接一次
@@ -566,34 +598,30 @@ class WndMain(QMainWindow, Ui_WndMain):
         settings.cur_time_stamp += 1
 
     def on_timer_info_timeout(self):
-        tip_list = [
-            "低调使用科技, 守护游戏公平!",
-        ]
-        tip = settings.rnd_choice(tip_list)
-        self.show_tip(tip)
+        self.show_tip("低调使用科技, 守护游戏公平!")
 
     def on_timer_ds_timeout(self):
-        # 若距离上次心跳过去15分钟, 则退出软件
-        # 防止心跳线程被干掉
-        if settings.delta_minute(self.last_heart_stamp, settings.cur_time_stamp) >= 15:
-            self.show_info("与服务器断开连接2...")
-            self.sig_close.emit()
-        if not settings.cfg_common["定时"]:
+        # # 若距离上次心跳过去15分钟, 则退出软件
+        # # 防止心跳线程被干掉
+        # if settings.delta_minute(self.last_heart_stamp, settings.cur_time_stamp) >= 15:
+        #     self.show_info("与服务器断开连接2...")
+        #     self.sig_close.emit()
+        if not settings.cfg_common.get("定时"):
             return
-        if settings.cfg_common["定时运行全部窗口"] and settings.cur_time_fmt[:5] == settings.cfg_common["定时运行全部窗口时间"]:
+        if settings.cfg_common.get("定时运行全部窗口") and settings.cur_time_fmt[:5] == settings.cfg_common.get("定时运行全部窗口时间"):
             self.show_info("定时运行开始执行!")
             # 依次运行
             for wk in settings.worker_list:
                 if wk:
                     wk.write_tbe_console(settings.COL_RUN, settings.SELECTED)
-        if settings.cfg_common["定时关闭计算机"] and settings.cur_time_fmt[:5] == settings.cfg_common["定时关闭计算机时间"]:
+        if settings.cfg_common.get("定时关闭计算机") and settings.cur_time_fmt[:5] == settings.cfg_common.get("定时关闭计算机时间"):
             self.show_info("定时关机开始执行!")
             # 依次终止
             for wk in settings.worker_list:
                 if wk:
                     wk.write_tbe_console(settings.COL_END, settings.SELECTED)
             # 弹框提示
-            msg_box = settings.TimeMsgBox("提示", "定时关机时间到, 是否关机?")
+            msg_box = TimeMsgBox("提示", "定时关机时间到, 是否关机?")
             msg_box.exec_()
             if msg_box.clickedButton() != msg_box.btn_accept:
                 self.show_info("已取消关机")
@@ -603,7 +631,7 @@ class WndMain(QMainWindow, Ui_WndMain):
 
     def on_tre_all_item_double_clicked(self, item, col):
         item_text = item.text(col)
-        if item_text in ("单人", "组队", "附加"):
+        if item_text in ("单人", "组队", "其它"):
             return
         self.lst_exec.addItem(item_text)
 
@@ -616,18 +644,16 @@ class WndMain(QMainWindow, Ui_WndMain):
         curItem = self.lst_plan.currentItem()
         plan_name = "0内置默认" if curItem is None else curItem.text()
         # 弹框提示
-        msg_box = settings.MyMsgBox(
-            "提示", f"将左边的控件配置保存至方案 \n{plan_name}?", self)
+        msg_box = MyMsgBox("提示", f"将左边的控件配置保存至方案 \n{plan_name}?", self)
         msg_box.exec_()
         if msg_box.clickedButton() != msg_box.btn_accept:
             self.show_info("保存方案 操作已取消")
             return
-        cfg_plan = settings.cfg_plan_dict[plan_name]
+        cfg_plan = settings.cfg_plan_dict.get(plan_name, {})
         # 保存方案配置
         cfg_plan["执行列表"] = [self.lst_exec.item(
             i).text() for i in range(self.lst_exec.count())]
-        settings.dict_to_json_file(
-            settings.cfg_plan_dict, settings.PATH_JSON_PLAN)
+        utils.dict_to_json_file(settings.cfg_plan_dict, const.PATH_SOFTWARE_PLAN)
         # 刷新所有cmb_plan的toolTip
         for cmb_plan in settings.cmb_plan_list:
             if cmb_plan.currentText() == plan_name:
@@ -642,10 +668,10 @@ class WndMain(QMainWindow, Ui_WndMain):
             self.show_info("失败,请选择要读取的配置文件!")
             return
         plan_name = curItem.text()
-        cfg_plan = settings.cfg_plan_dict[plan_name]
+        cfg_plan = settings.cfg_plan_dict.get(plan_name, {})
         # 读取方案配置
         self.lst_exec.clear()
-        self.lst_exec.addItems(cfg_plan["执行列表"])
+        self.lst_exec.addItems(cfg_plan.get("执行列表", []))
         self.show_info(f"方案配置-{plan_name}, 读取完成")
 
     def on_lst_plan_currentTextChanged(self, cur_text):
@@ -660,17 +686,16 @@ class WndMain(QMainWindow, Ui_WndMain):
         if plan_name in settings.cfg_plan_dict:
             self.show_info("失败, 方案名已存在")
             return
-        # 创建新配置文件对应的CfgPlan对象
-        settings.cfg_plan_dict[plan_name] = copy.deepcopy(settings.cfg_plan)
+        # 这时要读取所有控件状态，保存
+        settings.cfg_plan_dict[plan_name] = self.get_plan_setting_dict()
         # 在lst_plan里添加方案名, 并排序
         self.lst_plan.addItem(plan_name)
         self.lst_plan.sortItems()
-        # 在cmb_plan里添加方案名
+        # 在每个cmb_plan里添加方案名的选项
         for cmb_plan in settings.cmb_plan_list:
             cmb_plan.addItem(plan_name)
         # 保存到json文件
-        settings.dict_to_json_file(
-            settings.cfg_plan_dict, settings.PATH_JSON_PLAN)
+        utils.dict_to_json_file(settings.cfg_plan_dict, const.PATH_SOFTWARE_PLAN)
         self.show_info("新建方案成功!")
 
     # 重命名方案
@@ -687,8 +712,7 @@ class WndMain(QMainWindow, Ui_WndMain):
         # 重命名key
         settings.cfg_plan_dict[new_plan_name] = settings.cfg_plan_dict.pop(
             old_plan_name)
-        settings.dict_to_json_file(
-            settings.cfg_plan_dict, settings.PATH_JSON_PLAN)
+        utils.dict_to_json_file(settings.cfg_plan_dict, const.PATH_SOFTWARE_PLAN)
         # 在lst_plan里修改方案名
         self.lst_plan.takeItem(self.lst_plan.row(curItem))
         self.lst_plan.addItem(new_plan_name)
@@ -863,11 +887,11 @@ class WndMain(QMainWindow, Ui_WndMain):
     def on_tool_bar_actionTriggered(self, action):
         action_name = action.text()
         self.show_tip(f"切换到 {action_name} 窗口")
-        if action_name == "控 制":
+        if action_name == "窗口控制":
             self.stack_widget.setCurrentIndex(0)
-        elif action_name == "方 案":
+        elif action_name == "方案配置":
             self.stack_widget.setCurrentIndex(1)
-        elif action_name == "通 用":
+        elif action_name == "通用配置":
             self.stack_widget.setCurrentIndex(2)
 
     def on_tool_bar_orientationChanged(self, orientation):
@@ -885,8 +909,7 @@ class WndMain(QMainWindow, Ui_WndMain):
         plan_name = cur_item.text()
         # 从 方案配置字典中移除该方案
         settings.cfg_plan_dict.pop(plan_name)
-        settings.dict_to_json_file(
-            settings.cfg_plan_dict, settings.PATH_JSON_PLAN)
+        utils.dict_to_json_file(settings.cfg_plan_dict, settings.PATH_JSON_PLAN)
         # 删除 方案列表中的对应项
         row = self.lst_plan.row(cur_item)
         self.lst_plan.takeItem(row)

@@ -7,3 +7,4 @@ from .plugin import *
 from .security import *
 from .utils import *
 from .wnd import *
+from .qt import *

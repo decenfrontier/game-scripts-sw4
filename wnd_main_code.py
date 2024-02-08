@@ -76,7 +76,7 @@ class WndMain(QMainWindow, Ui_WndMain):
             settings.cfg_common.get("获取窗口后设置方案", "0"))
         self.cmb_set_plan_db_col.setCurrentText(
             settings.cfg_common.get("双击方案列设置方案", "0"))
-        # TODO:方案配置
+        # 方案配置
         settings.cfg_plan_dict = json_file_to_dict(
             const.PATH_SOFTWARE_PLAN, settings.cfg_plan_dict)
         print("settings.cfg_plan_dict:", settings.cfg_plan_dict)

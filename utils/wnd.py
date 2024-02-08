@@ -33,15 +33,6 @@ def terminate_wnd(hwnd):
     TerminateProcess(hProcess, 0)
 
 
-def is_wnd_in_list(hwnd: int) -> bool:
-    for wk in settings.worker_list:
-        if wk is None:
-            continue
-        if wk.hwnd == hwnd:
-            return True
-    return False
-
-
 # 获取 主屏幕 宽高
 def get_main_screen_wh():
     pri_screen = QApplication.primaryScreen()
